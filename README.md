@@ -17,6 +17,26 @@ Presentazione animata su Giove per la ricerca di Razvan, Sofia, Riccardo e Idir.
    - **05 Le dimensioni**: "Ripeti l'animazione" fa ripartire le Terre.
    - **14 Quiz lampo**: tocca una carta per girarla e vedere la risposta.
 
+## Versione PowerPoint con testi modificabili
+
+**`giove-animato.pptx`** è la stessa presentazione per PowerPoint 2016 o 365:
+
+- le animazioni (Giove, lune, Macchia Rossa, Terre, anelli, Juno) sono video di sfondo che partono da soli;
+- tutti i testi sono caselle di PowerPoint: si correggono come in qualsiasi presentazione;
+- i testi compaiono in dissolvenza; nel quiz ogni clic fa comparire una risposta;
+- le note per chi parla sono sotto ogni slide.
+
+Cosa cambia rispetto all'HTML:
+
+- il carattere è Calibri, presente con Office;
+- alcune scritte fanno parte del video e non si modificano: il contatore "× 1 / × 13 / × 75" e lo stato "Giove / Nana bruna / Stella", i numeri 11 e 1.321 che contano le Terre, i nomi delle lune in orbita, "Juno", "Terra" e le misure in km sulla Macchia Rossa;
+- i video delle slide 05, 06 e 09 (Terre, interno di Giove, Macchia Rossa) si fermano sull'ultima immagine; gli altri ripartono da soli;
+- se un testo diventa più lungo, la casella non si allarga da sola sopra i riquadri disegnati nel video.
+
+Per rigenerarla dopo una modifica a `src/giove.html`: `python3 build.py`, poi
+`node tools/ppt/record.js index.html <cartella>` e `python3 tools/ppt/build_pptx.py <cartella> giove-animato.pptx`
+(servono Playwright, ffmpeg e python-pptx).
+
 ## Versione di riserva (senza animazioni)
 
 Nella cartella `riserva/` ci sono le stesse 15 slide, ferme, con le note per chi parla:
