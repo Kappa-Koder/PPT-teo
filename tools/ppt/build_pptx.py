@@ -110,7 +110,12 @@ def layout(b):
         return dict(x=r["x"], y=r["y"], w=r["w"], h=r["h"], wrap=True, scale=1.0, inset=[v + 5 for v in b["pad"]], middle=True)
     left = min(p["text"]["x"] for p in paras)
     right = max(p["text"]["r"] for p in paras)
-    if b.get("content"):
+    if center and single:
+        # testo centrato su una riga: casella centrata sul testo, non sul contenitore
+        mid = (left + right) / 2
+        half = (right - left) / 2 * 1.25 + 10
+        left, right = mid - half, mid + half
+    elif b.get("content"):
         if center:
             left, right = b["content"]["x"], b["content"]["r"]
         else:
@@ -206,6 +211,8 @@ def add_block(slide, b):
             rPr = rn._r.get_or_add_rPr()
             if run["upper"]:
                 rPr.set("cap", "all")
+            if run.get("sup"):
+                rPr.set("baseline", "30000")
             if run["ls"]:
                 rPr.set("spc", str(round(run["ls"] * sc * 0.5 * 100)))
             if run["banded"]:

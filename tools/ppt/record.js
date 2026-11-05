@@ -77,13 +77,15 @@ function extract(specs) {
       t, size: px(cs.fontSize), weight: parseInt(cs.fontWeight, 10) || 400, italic: cs.fontStyle === 'italic',
       color: isSvg(e) ? cs.fill : cs.color, fam: cs.fontFamily.split(',')[0].replace(/["']/g, '').trim(),
       ls: cs.letterSpacing === 'normal' ? 0 : px(cs.letterSpacing), upper: cs.textTransform === 'uppercase',
-      banded: !!(e.closest && e.closest('.banded')), node: null,
+      banded: !!(e.closest && e.closest('.banded')), sup: cs.verticalAlign === 'super', node: null,
     };
   }
   function paragraphs(root, exclude) {
     const P = []; let cur = null;
-    const blockish = e => { const d = getComputedStyle(e).display; return d !== 'inline' && d !== 'contents'; };
+    const blockish = e => { const d = getComputedStyle(e).display; return !/^(inline|inline-block|inline-flex|inline-grid|contents)$/.test(d); };
     (function walk(node, pel) {
+      const ncs = node.nodeType === 1 ? getComputedStyle(node) : null;
+      const rowFlex = !!ncs && /flex/.test(ncs.display) && ncs.flexDirection.indexOf('row') === 0;
       for (const ch of node.childNodes) {
         if (ch.nodeType === 3) {
           const t = ch.textContent.replace(/\s+/g, ' ');
@@ -94,7 +96,7 @@ function extract(specs) {
           if (exclude && ch.matches(exclude)) continue;
           if (ch.tagName === 'BR') { if (cur) cur.runs.push({ br: true }); continue; }
           if (getComputedStyle(ch).display === 'none') continue;
-          if (!isSvg(ch) && blockish(ch)) { cur = null; walk(ch, ch); cur = null; } else walk(ch, pel);
+          if (!isSvg(ch) && blockish(ch) && !rowFlex) { cur = null; walk(ch, ch); cur = null; } else walk(ch, pel);
         }
       }
     })(root, root);
@@ -200,6 +202,14 @@ async function doSlide(browser, file, out, n) {
   await advance(page, 6000, 500);
   const data = await page.evaluate(extract, spec.blocks);
   await page.close();
+  if (process.env.EXTRACT_ONLY) { // aggiorna solo i testi, tiene il video già registrato
+    const f = path.join(out, 's' + String(n).padStart(2, '0') + '.json');
+    const meta = JSON.parse(fs.readFileSync(f, 'utf8'));
+    meta.blocks = data.blocks; meta.notes = data.notes;
+    fs.writeFileSync(f, JSON.stringify(meta, null, 1));
+    console.log('slide ' + n + ': testi aggiornati');
+    return;
+  }
   // 2) registrazione senza testi
   page = await openSlide(browser, file, n);
   await page.evaluate(([specs, css, hide]) => {
