@@ -1,0 +1,1419 @@
+<title>Vi presentiamo Giove</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style id="font-faces">/*FONTS*/</style>
+<style>
+/* Layout: palco fisso 1920×1080 scalato sulla finestra; titolo in alto a sinistra, illustrazione animata e testo si dividono ogni slide.
+   Colori: fondo di spazio profondo e i colori delle nubi di Giove (crema, ocra, ruggine della Macchia Rossa) più un azzurro "ghiaccio" per magnetismo e lune. */
+:root{
+  --space:#0a0c17;
+  --space-2:#141a2d;
+  --line:#2b3354;
+  --cream:#f4e8d0;
+  --muted:#b6ac99;
+  --ochre:#eca95c;
+  --rust:#e36a42;
+  --ice:#93d3f2;
+  --violet:#b9a6ff;
+  --paper:#f2e6cc;
+  --ink:#1e1a26;
+  --ink-2:#6a5d50;
+  --l-atm:#e7bd86;
+  --l-man:#8f9ab3;
+  --l-core:#e36a42;
+  --f-display:"Bricolage Grotesque","Arial Black","Segoe UI Black",system-ui,sans-serif;
+  --f-body:"Atkinson Hyperlegible","Segoe UI",Verdana,system-ui,sans-serif;
+  --f-mono:"Atkinson Hyperlegible Mono",ui-monospace,Consolas,"Cascadia Mono",monospace;
+  color-scheme:dark;
+}
+html,body{height:100%}
+body{margin:0;background:var(--space);color:var(--cream);overflow:hidden;box-sizing:border-box;padding-block:0;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  font-family:var(--f-body);-webkit-font-smoothing:antialiased}
+[hidden]{display:none!important}
+#deck{position:relative;width:100%;height:100%;overflow:hidden;background:var(--space);-webkit-user-select:none;user-select:none;touch-action:pan-y}
+#deck:fullscreen{width:100vw;height:100vh}
+#stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform-origin:0 0;overflow:hidden;
+  background:radial-gradient(1300px 760px at 80% 18%,rgba(72,86,160,.17),transparent 70%),radial-gradient(1000px 640px at 6% 96%,rgba(160,86,60,.12),transparent 70%),var(--space)}
+.fx{position:absolute;display:block;pointer-events:none}
+
+/* ---------- slide ---------- */
+.slide{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .55s ease,visibility 0s linear .55s;pointer-events:none}
+.slide.active{opacity:1;visibility:visible;transition:opacity .55s ease;pointer-events:auto;z-index:1}
+.notes{display:none}
+.head{position:absolute;left:120px;top:84px;display:flex;flex-direction:column;gap:12px;z-index:3}
+.eyebrow,.kicker{margin:0;font:500 26px/1 var(--f-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--ochre)}
+.title{margin:0;font:800 96px/1 var(--f-display);letter-spacing:-.025em;color:var(--cream);text-wrap:balance}
+.lead{margin:0;font:400 40px/1.32 var(--f-body);color:var(--cream);text-wrap:pretty}
+.body{margin:0;font:400 32px/1.4 var(--f-body);color:var(--cream);text-wrap:pretty}
+.small{margin:0;font:400 26px/1.4 var(--f-body);color:var(--muted);text-wrap:pretty}
+.lead b,.body b{color:var(--ochre);font-weight:700}
+h3{margin:0;font:800 40px/1.1 var(--f-display);letter-spacing:-.01em;color:var(--cream)}
+.big{display:block;font:800 96px/1 var(--f-display);letter-spacing:-.03em;color:var(--ochre);font-variant-numeric:tabular-nums}
+.col{position:absolute;display:flex;flex-direction:column;z-index:3}
+
+/* ---------- animazioni d'ingresso ---------- */
+@keyframes rise{from{opacity:0;transform:translateY(36px)}to{opacity:1;transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes pop{0%{opacity:0;transform:scale(.4)}65%{opacity:1;transform:scale(1.08)}100%{opacity:1;transform:none}}
+@keyframes drop{0%{opacity:0;transform:translateY(-140px) rotate(-10deg)}60%{opacity:1;transform:translateY(12px) rotate(2deg)}100%{opacity:1;transform:none}}
+@keyframes stamp{0%{opacity:0;transform:rotate(-9deg) scale(2.6)}60%{opacity:1;transform:rotate(-9deg) scale(.94)}100%{opacity:1;transform:rotate(-9deg) scale(1)}}
+@keyframes flow{to{stroke-dashoffset:-16}}
+@keyframes glow{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes plume{0%{transform:translateY(8px) scale(.6);opacity:0}30%{opacity:1}100%{transform:translateY(-10px) scale(1.15);opacity:0}}
+@keyframes draw{from{stroke-dasharray:0 1000}}
+.slide.active .in{animation:rise .85s cubic-bezier(.2,.75,.2,1) both;animation-delay:var(--d,0s)}
+.slide.active .fade{animation:fade .8s ease both;animation-delay:var(--d,0s)}
+.slide.active .pop{animation:pop .7s cubic-bezier(.2,.75,.2,1) both;animation-delay:var(--d,0s)}
+
+/* ---------- 1 copertina ---------- */
+.cover-text{left:120px;top:176px;width:840px;gap:22px}
+.cover-pre{margin:0;font:800 56px/1 var(--f-display);color:var(--cream)}
+.cover-title{margin:0;display:flex;font:800 250px/.88 var(--f-display);letter-spacing:-.035em}
+.banded{background:linear-gradient(180deg,#f8eed9 0 24%,#e8b97f 24% 33%,#f4e3c6 33% 45%,#c97a45 45% 55%,#f2ddb9 55% 64%,#e36a42 64% 71%,#ebc38e 71% 84%,#f7ebd3 84%);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.cover-title span{display:inline-block}
+.slide.active .cover-title span{animation:drop .9s cubic-bezier(.2,.8,.3,1.2) both;animation-delay:calc(.35s + var(--i)*.09s)}
+.team{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:14px}
+.team li{display:flex;align-items:center;gap:12px;padding:8px 26px 8px 8px;border-radius:999px;background:rgba(244,232,208,.07);border:1px solid var(--line);font:700 32px/1 var(--f-body)}
+.ini{display:grid;place-items:center;width:48px;height:48px;border-radius:50%;background:var(--ochre);color:var(--ink);font:800 26px/1 var(--f-display)}
+.hint{margin:4px 0 0}
+kbd{font:500 24px/1 var(--f-mono);padding:4px 10px;border:1px solid var(--line);border-radius:8px;color:var(--cream)}
+
+/* ---------- 2 carta d'identità ---------- */
+.idcard{position:absolute;left:120px;top:252px;width:1220px;background:var(--paper);color:var(--ink);border-radius:28px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.45);z-index:3}
+.id-top{display:flex;justify-content:space-between;gap:24px;padding:18px 36px;background:var(--ink);color:var(--ochre);font:500 26px/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase}
+.id-body{display:grid;grid-template-columns:300px 1fr;gap:48px;padding:36px 40px 40px}
+.id-photo{position:relative;width:300px;height:380px;border-radius:18px;background:var(--space);overflow:hidden}
+.id-photo canvas{position:absolute;left:0;top:6px}
+.id-photo p{position:absolute;left:0;right:0;bottom:22px;margin:0;text-align:center;font:800 40px/1 var(--f-display);color:var(--cream);letter-spacing:.04em}
+.id-grid{margin:0;display:grid;grid-template-columns:1fr 1fr;gap:26px 32px;align-content:start}
+.id-grid div{min-width:0}
+.id-grid dt{font:500 24px/1.2 var(--f-mono);letter-spacing:.02em;text-transform:uppercase;color:var(--ink-2)}
+.id-grid dd{margin:6px 0 0;font:800 44px/1.05 var(--f-display);letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+.id-grid dd small{display:block;margin-top:4px;font:400 26px/1.2 var(--f-body);color:var(--ink-2)}
+.id-grid sup{font-size:.55em}
+.u{font:700 30px/1 var(--f-body);letter-spacing:0}
+.stamp{align-self:center;justify-self:start;padding:10px 22px;border:5px solid var(--rust);border-radius:10px;color:var(--rust);font:800 34px/1 var(--f-display);text-transform:uppercase;letter-spacing:.04em;transform:rotate(-9deg)}
+.slide.active .stamp{animation:stamp .6s cubic-bezier(.3,.7,.3,1) both;animation-delay:1.7s}
+.side{left:1420px;top:262px;width:380px;gap:26px}
+.fact{margin:0;padding-top:20px;border-top:2px solid var(--line);font:400 32px/1.38 var(--f-body)}
+.fact b{display:block;color:var(--ochre);font:800 40px/1.1 var(--f-display);margin-bottom:6px}
+
+/* ---------- 3 che cos'è ---------- */
+.scale-note{position:absolute;right:120px;top:150px;margin:0;z-index:3}
+.plist{list-style:none;margin:0;padding:0}
+.plist li{position:absolute;top:600px;width:200px;display:flex;flex-direction:column;align-items:center;gap:8px;font:700 26px/1 var(--f-body);color:var(--cream);z-index:3}
+.plist li b{display:grid;place-items:center;width:46px;height:46px;border-radius:50%;border:2px solid var(--muted);font:800 26px/1 var(--f-display);color:var(--cream)}
+.plist li.hl{font-size:32px;color:var(--ochre)}
+.plist li.hl b{width:60px;height:60px;background:var(--ochre);border-color:var(--ochre);color:var(--ink);font-size:32px}
+.plist li.dim{opacity:.6}
+.belt-label{position:absolute;top:612px;width:200px;margin:0;text-align:center;z-index:3}
+.cols3{left:120px;top:730px;width:1680px;display:grid;grid-template-columns:repeat(3,1fr);gap:60px;flex-direction:row}
+.cols3>div{display:flex;flex-direction:column;gap:12px;padding-top:22px;border-top:3px solid var(--line)}
+.cols3>div:first-child{border-top-color:var(--ochre)}
+
+/* ---------- 4 stella ---------- */
+.state-label{position:absolute;left:120px;top:880px;width:720px;margin:0;text-align:center;font:800 56px/1 var(--f-display);color:var(--cream);z-index:3}
+.foot-left{position:absolute;left:150px;top:960px;width:660px;margin:0;text-align:center;z-index:3}
+.right-col{left:980px;top:236px;width:820px;gap:22px}
+.meter-head{display:flex;align-items:baseline;justify-content:space-between;margin:0}
+.meter-head b{font:800 72px/1 var(--f-display);color:var(--ochre);font-variant-numeric:tabular-nums}
+.cells{display:grid;grid-template-columns:repeat(15,40px);gap:10px}
+.cells i{width:40px;height:40px;border-radius:50%;background:rgba(244,232,208,.08);box-shadow:inset 0 0 0 2px rgba(244,232,208,.12);transition:background .25s}
+.cells i.on{background:radial-gradient(circle at 35% 32%,#f7e7c9 0,#e2b47c 38%,#a8693f 72%,#5a3524 100%);box-shadow:none}
+.cells i.m13{outline:3px solid var(--rust);outline-offset:3px}
+.cells i.m75{outline:3px solid var(--cream);outline-offset:3px}
+.steps{display:flex;flex-direction:column;gap:12px}
+.step{display:grid;grid-template-columns:120px 1fr;align-items:center;gap:18px;width:100%;padding:14px 22px;border-radius:18px;border:2px solid var(--line);background:rgba(20,26,45,.7);color:var(--cream);text-align:left;cursor:pointer;font:400 32px/1.25 var(--f-body);transition:border-color .3s,background .3s}
+.step b{font:800 40px/1 var(--f-display);color:var(--muted)}
+.step.on{border-color:var(--ochre);background:rgba(236,169,92,.14)}
+.step.on b{color:var(--ochre)}
+
+/* ---------- 5 dimensioni ---------- */
+.dim-col{left:1150px;top:236px;width:650px;gap:34px}
+.stat{display:flex;flex-direction:column;gap:8px}
+.ghost{align-self:flex-start;padding:12px 22px;border-radius:999px;border:2px solid var(--line);background:transparent;color:var(--cream);font:700 26px/1 var(--f-body);cursor:pointer}
+.ghost:hover{border-color:var(--ochre)}
+.dim-jup{transition:opacity .2s linear}
+
+/* ---------- 6 struttura ---------- */
+.layers{left:1060px;top:226px;width:740px;gap:34px}
+.layer{display:grid;grid-template-columns:34px 1fr;gap:18px;align-items:start}
+.layer .dot{width:28px;height:28px;border-radius:50%;margin-top:6px;box-shadow:0 0 0 4px rgba(244,232,208,.12)}
+.layer p{margin:6px 0 0;font:400 32px/1.38 var(--f-body)}
+.lead-line{stroke:var(--cream);stroke-width:2.5;stroke-opacity:.8}
+.lead-dot{fill:var(--cream)}
+
+/* ---------- 7 magnete ---------- */
+.fl{fill:none;stroke:var(--ice);stroke-width:3.5;stroke-linecap:round;stroke-dasharray:2 14;stroke-opacity:var(--o);animation:flow 1.4s linear infinite}
+.fl-base{fill:none;stroke:var(--ice);stroke-width:1.5;stroke-opacity:.16}
+.aur{animation:glow 2.6s ease-in-out infinite}
+.mag-col{left:1110px;top:226px;width:690px;gap:36px}
+
+/* ---------- 8 / 9 finestre ---------- */
+.window{position:absolute;border-radius:28px;overflow:hidden;box-shadow:0 0 0 2px var(--line),0 30px 80px rgba(0,0,0,.5);z-index:2;background:#000}
+.tag{position:absolute;padding:8px 16px;border-radius:999px;background:rgba(10,12,23,.78);color:var(--cream);font:700 26px/1 var(--f-body);white-space:nowrap}
+.tag.dark{color:var(--ochre)}
+.atmo-col{left:1200px;top:226px;width:600px;gap:30px}
+.donut{display:flex;align-items:center;gap:28px}
+.donut svg{flex:none}
+.legend{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px;font:400 30px/1.2 var(--f-body)}
+.legend li{display:flex;align-items:center;gap:12px}
+.legend i{width:22px;height:22px;border-radius:6px;flex:none}
+.legend b{font-weight:700}
+.seg{fill:none;stroke-width:56;transform:rotate(-90deg);transform-origin:170px 170px}
+.slide.active .seg{animation:draw 1.5s cubic-bezier(.3,.7,.2,1) both;animation-delay:var(--d,.4s)}
+.grs-col{left:1270px;top:226px;width:530px;gap:24px}
+.facts{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:16px}
+.facts li{position:relative;padding-left:30px;font:400 32px/1.36 var(--f-body)}
+.facts li::before{content:"";position:absolute;left:0;top:14px;width:14px;height:14px;border-radius:50%;background:var(--rust)}
+
+/* ---------- 10 lune ---------- */
+.sub{position:absolute;left:120px;top:224px;margin:0;z-index:3}
+.mcards{position:absolute;left:120px;top:612px;width:1680px;display:grid;grid-template-columns:1fr 1fr;gap:20px 40px;z-index:3}
+.mcard{display:grid;grid-template-columns:116px 1fr;gap:26px;align-items:center;padding:20px 28px;border-radius:22px;background:rgba(20,26,45,.82);border:1px solid var(--line)}
+.mcard p{margin:6px 0 0;font:400 32px/1.3 var(--f-body)}
+.mwrap{position:relative;width:116px;height:116px}
+.mwrap canvas{display:block}
+.mwrap.io::after,.mwrap.io::before{content:"";position:absolute;width:26px;height:26px;border-radius:50%;background:radial-gradient(circle,#fff1c2 0,#ff9a3c 35%,rgba(255,120,40,0) 70%);animation:glow 1.8s ease-in-out infinite}
+.mwrap.io::after{left:58px;top:26px}
+.mwrap.io::before{left:30px;top:62px;animation-delay:.9s;z-index:1}
+
+/* ---------- 11 anelli ---------- */
+.ring-col{left:1290px;top:226px;width:510px;gap:26px}
+.cmp{position:absolute;left:120px;top:880px;display:flex;gap:44px;z-index:3}
+.cmp div{display:flex;align-items:center;gap:16px}
+.cmp canvas{position:static;flex:none}
+.cmp p{margin:0;font:400 26px/1.3 var(--f-body);color:var(--muted);width:260px}
+.cmp p b{display:block;color:var(--cream);font:800 32px/1.1 var(--f-display)}
+
+/* ---------- 12 juno ---------- */
+.juno-col{left:1080px;top:226px;width:720px;gap:24px}
+.juno-row{display:grid;grid-template-columns:240px 1fr;gap:28px;align-items:center}
+.juno-spin{animation:spin 30s linear infinite}
+.chips{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.chips li{display:flex;align-items:center;gap:14px;padding:8px 20px;border-radius:16px;background:rgba(147,211,242,.10);border:1px solid rgba(147,211,242,.35);font:700 30px/1.15 var(--f-body)}
+.chips li i{width:14px;height:14px;border-radius:50%;background:var(--ice);flex:none}
+.timeline{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:20px}
+.timeline .when{display:flex;flex-direction:column;gap:6px}
+.timeline .when b{font:800 44px/1 var(--f-display);color:var(--ochre)}
+.timeline .when span{font:400 26px/1.2 var(--f-body);color:var(--muted)}
+.timeline .trip{position:relative;height:2px;background:repeating-linear-gradient(90deg,var(--ice) 0 10px,transparent 10px 20px)}
+.timeline .trip span{position:absolute;left:0;right:0;top:-44px;text-align:center;font:400 26px/1.2 var(--f-body);color:var(--cream)}
+.box{padding:20px 26px;border-radius:20px;background:rgba(236,169,92,.10);border:1px solid rgba(236,169,92,.4)}
+.box .kicker{margin-bottom:10px}
+
+/* ---------- 13 conclusione ---------- */
+.end-col{left:120px;top:236px;width:700px;gap:30px}
+.quote{margin:0;font:800 56px/1.12 var(--f-display);letter-spacing:-.015em;color:var(--cream);text-wrap:balance}
+.quote em{font-style:normal;color:var(--ochre)}
+
+/* ---------- 14 quiz ---------- */
+.quiz{position:absolute;left:120px;top:248px;width:1680px;display:grid;grid-template-columns:1fr 1fr;gap:32px;z-index:3}
+.qcard{position:relative;height:320px;perspective:1800px;background:none;border:0;padding:0;cursor:pointer;text-align:left;color:inherit;font:inherit;border-radius:26px}
+.qinner{position:absolute;inset:0;transition:transform .75s cubic-bezier(.2,.75,.2,1);transform-style:preserve-3d}
+.qcard.flip .qinner{transform:rotateY(180deg)}
+.qf,.qb{position:absolute;inset:0;-webkit-backface-visibility:hidden;backface-visibility:hidden;border-radius:26px;padding:34px 40px;display:flex;flex-direction:column;justify-content:space-between;box-sizing:border-box}
+.qf{background:var(--space-2);border:2px solid var(--line)}
+.qb{background:var(--paper);color:var(--ink);transform:rotateY(180deg)}
+.qb .kicker{color:var(--rust)}
+.qb strong{font:800 56px/1.05 var(--f-display);letter-spacing:-.015em}
+.qb .small{color:var(--ink-2)}
+.qf .small{color:var(--muted)}
+
+/* ---------- 15 grazie ---------- */
+.thanks{position:absolute;left:0;right:0;top:150px;display:flex;flex-direction:column;align-items:center;gap:22px;text-align:center;z-index:3}
+.thanks h2{margin:0;font:800 250px/.9 var(--f-display);letter-spacing:-.035em}
+.thanks .team{justify-content:center}
+.credits{position:absolute;left:120px;top:56px;margin:0;z-index:3}
+
+/* ---------- comandi ---------- */
+#ui{position:absolute;right:28px;bottom:22px;z-index:30;display:flex;align-items:center;gap:6px;padding:8px;border-radius:999px;background:rgba(20,26,45,.78);border:1px solid var(--line);opacity:.5;transition:opacity .3s}
+#ui:hover,#ui:focus-within{opacity:1}
+#deck.idle #ui{opacity:0}
+#deck.idle{cursor:none}
+#ui button{font:700 26px/1 var(--f-body);color:var(--cream);background:transparent;border:0;border-radius:999px;padding:12px 18px;cursor:pointer}
+#ui button:hover{background:rgba(244,232,208,.1)}
+#ui button[aria-pressed="true"]{background:var(--ochre);color:var(--ink)}
+#count{font:500 24px/1 var(--f-mono);color:var(--muted);min-width:100px;text-align:center;font-variant-numeric:tabular-nums}
+#ui button:focus-visible,.step:focus-visible,.qcard:focus-visible,.ghost:focus-visible{outline:3px solid var(--ice);outline-offset:3px}
+#progress{position:absolute;left:0;bottom:0;width:100%;height:6px;background:rgba(244,232,208,.06);z-index:29}
+#progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--ochre),var(--rust));transition:width .5s ease}
+#notesPanel{position:absolute;left:0;right:0;bottom:0;z-index:28;padding:30px 120px 104px;background:rgba(10,12,23,.95);border-top:3px solid var(--ochre)}
+#notesPanel .kicker{margin-bottom:14px}
+#notesPanel p{margin:0;font:400 32px/1.45 var(--f-body);color:var(--cream);max-width:1500px}
+
+@media (prefers-reduced-motion: reduce){
+  .slide.active .in,.slide.active .fade,.slide.active .pop,.slide.active .cover-title span,.slide.active .stamp,.slide.active .seg{animation:none!important}
+  .fl,.aur,.juno-spin,.mwrap.io::after,.mwrap.io::before{animation:none!important}
+  .slide,.qinner,#progress i{transition:none!important}
+}
+</style>
+
+<div id="deck">
+<div id="stage" role="region" aria-roledescription="presentazione" aria-label="Vi presentiamo Giove">
+<canvas id="stars" class="fx" style="left:0;top:0;width:1920px;height:1080px"></canvas>
+
+<!-- 1 · COPERTINA -->
+<section class="slide" data-scene="cover" aria-label="Vi presentiamo Giove">
+  <canvas class="fx" data-k="back" style="left:0;top:0;width:1920px;height:1080px"></canvas>
+  <canvas class="fx" data-k="jup" data-cap="1300" style="left:890px;top:10px;width:1100px;height:1100px"></canvas>
+  <canvas class="fx" data-k="front" style="left:0;top:0;width:1920px;height:1080px"></canvas>
+  <div class="col cover-text">
+    <p class="eyebrow in" style="--d:.1s">Il gigante del Sistema Solare</p>
+    <p class="cover-pre in" style="--d:.2s">Vi presentiamo</p>
+    <h1 class="cover-title" aria-label="Giove!"><span class="banded" style="--i:0">G</span><span class="banded" style="--i:1">I</span><span class="banded" style="--i:2">O</span><span class="banded" style="--i:3">V</span><span class="banded" style="--i:4">E</span><span class="banded" style="--i:5">!</span></h1>
+    <ul class="team in" style="--d:1.1s" aria-label="Il gruppo">
+      <li><span class="ini">R</span>Razvan</li><li><span class="ini">S</span>Sofia</li><li><span class="ini">R</span>Riccardo</li><li><span class="ini">I</span>Idir</li>
+    </ul>
+    <p class="small hint in" style="--d:1.5s">Premi <kbd>→</kbd> oppure tocca lo schermo per andare avanti</p>
+  </div>
+  <aside class="notes">Buongiorno a tutti! Siamo Razvan, Sofia, Riccardo e Idir e oggi vi presentiamo Giove, il pianeta più grande del Sistema Solare.</aside>
+</section>
+
+<!-- 2 · CARTA D'IDENTITÀ -->
+<section class="slide" data-scene="carta" aria-label="Carta d'identità di Giove">
+  <header class="head"><p class="eyebrow in">Giove · 02</p><h2 class="title in" style="--d:.06s">Carta d'identità di Giove</h2></header>
+  <div class="idcard in" style="--d:.18s">
+    <div class="id-top"><span>Repubblica del Sistema Solare</span><span>Documento planetario</span></div>
+    <div class="id-body">
+      <div class="id-photo">
+        <canvas data-k="jup" style="width:300px;height:300px"></canvas>
+        <p>GIOVE</p>
+      </div>
+      <dl class="id-grid">
+        <div><dt>Diametro equatoriale</dt><dd><span data-to="142984">142.984</span> <span class="u">km</span></dd></div>
+        <div><dt>Massa</dt><dd>1,9 × 10<sup>27</sup> <span class="u">kg</span></dd></div>
+        <div><dt>Distanza media dal Sole</dt><dd><span data-to="780">780</span> <span class="u">milioni di km</span></dd></div>
+        <div><dt>Un giorno (rotazione)</dt><dd><span data-to="9">9</span> <span class="u">h</span> <span data-to="55">55</span> <span class="u">min</span></dd></div>
+        <div><dt>Un anno (rivoluzione)</dt><dd><span data-to="11.9" data-dec="1">11,9</span> <span class="u">anni</span></dd></div>
+        <div><dt>Gravità</dt><dd><span data-to="25">25</span> <span class="u">m/s²</span><small>2,5 volte quella della Terra</small></dd></div>
+        <div><dt>Temperatura in cima alle nubi</dt><dd><span data-to="-120">−120</span> <span class="u">°C</span></dd></div>
+        <div class="stamp">Gigante gassoso</div>
+      </dl>
+    </div>
+  </div>
+  <div class="col side">
+    <p class="kicker in" style="--d:.5s">Lo sapevi?</p>
+    <p class="fact in" style="--d:.7s"><b>Il giorno più corto</b>Su Giove un giorno dura meno di 10 ore: è il più breve di tutti i pianeti.</p>
+    <p class="fact in" style="--d:.9s"><b>Compleanni rari</b>Se hai 10 anni, su Giove non hai ancora festeggiato il tuo primo compleanno!</p>
+  </div>
+  <aside class="notes">Ecco la carta d'identità di Giove. Il diametro all'equatore è di 142.984 km. La massa è 1,9 × 10²⁷ kg, cioè 19 seguito da 26 zeri! Si trova in media a circa 780 milioni di km dal Sole. Un giorno su Giove dura 9 ore e 55 minuti, un anno dura 11,9 anni terrestri. La gravità è di 25 m/s², due volte e mezzo quella della Terra. In cima alle nubi la temperatura è di circa −120 °C: Giove non ha una superficie solida, quindi si misura lì.</aside>
+</section>
+
+<!-- 3 · CHE COS'È -->
+<section class="slide" data-scene="system" aria-label="Che cos'è Giove?">
+  <header class="head"><p class="eyebrow in">Giove · 03</p><h2 class="title in" style="--d:.06s">Che cos'è Giove?</h2></header>
+  <p class="small scale-note fade" style="--d:.4s">Pianeti in scala tra loro · distanze non in scala</p>
+  <canvas class="fx" data-k="row" style="left:0;top:0;width:1920px;height:1080px"></canvas>
+  <canvas class="fx" data-k="jup" style="left:920px;top:270px;width:320px;height:320px"></canvas>
+  <ol class="plist">
+    <li class="pop" style="left:200px;--d:.5s"><b>1</b>Mercurio</li>
+    <li class="pop" style="left:340px;--d:.65s"><b>2</b>Venere</li>
+    <li class="pop" style="left:480px;--d:.8s"><b>3</b>Terra</li>
+    <li class="pop" style="left:620px;--d:.95s"><b>4</b>Marte</li>
+    <li class="pop hl" style="left:980px;--d:1.25s"><b>5</b>Giove</li>
+    <li class="pop dim" style="left:1600px;--d:1.45s"><b>6</b>Saturno</li>
+  </ol>
+  <p class="small belt-label fade" style="left:750px;--d:1.1s">asteroidi</p>
+  <div class="col cols3">
+    <div class="in" style="--d:1.5s"><h3>Il quinto pianeta</h3><p class="body">Partendo dal Sole, è il 5° pianeta del Sistema Solare ed è il più grande di tutti.</p></div>
+    <div class="in" style="--d:1.7s"><h3>Un gigante di gas</h3><p class="body">È formato soprattutto da gas e non ha una superficie solida come quella della Terra.</p></div>
+    <div class="in" style="--d:1.9s"><h3>Lontano dal Sole</h3><p class="body">Riceve meno luce e meno calore della Terra: circa 27 volte meno.</p></div>
+  </div>
+  <aside class="notes">Giove è il quinto pianeta del Sistema Solare, partendo dal Sole, ed è il pianeta più grande di tutti. È un pianeta gassoso, cioè formato soprattutto da gas, e non ha una superficie solida come quella della Terra. Giove è molto lontano dal Sole e per questo riceve meno calore e luce rispetto alla Terra: circa 27 volte meno. Guardate le scie di luce: più si allontanano dal Sole, più diventano deboli.</aside>
+</section>
+
+<!-- 4 · SIMILE A UNA STELLA -->
+<section class="slide" data-scene="stella" aria-label="Simile a una stella">
+  <header class="head"><p class="eyebrow in">Giove · 04</p><h2 class="title in" style="--d:.06s">Simile a una stella</h2></header>
+  <canvas class="fx" data-k="jup" style="left:60px;top:170px;width:840px;height:840px"></canvas>
+  <p class="state-label" data-k="stateName" aria-live="polite">Giove</p>
+  <p class="small foot-left fade" style="--d:1s">Anche con più massa resterebbe grande più o meno come ora: diventerebbe più denso e più caldo.</p>
+  <div class="col right-col">
+    <p class="lead in" style="--d:.2s">È il pianeta più simile al Sole: è fatto anche lui di <b>idrogeno ed elio</b>.</p>
+    <div class="in" style="--d:.4s">
+      <p class="meter-head"><span class="kicker">Massa rispetto a Giove di oggi</span><b data-k="mult">× 1</b></p>
+    </div>
+    <div class="cells in" style="--d:.5s" data-k="cells" aria-hidden="true"></div>
+    <div class="steps in" style="--d:.7s" role="group" aria-label="Scegli quanta massa">
+      <button class="step" data-step="0" aria-pressed="true"><b>× 1</b><span>Giove com'è oggi: un pianeta</span></button>
+      <button class="step" data-step="1" aria-pressed="false"><b>× 13</b><span>Brucerebbe il deuterio: una nana bruna</span></button>
+      <button class="step" data-step="2" aria-pressed="false"><b>× 75</b><span>Fonderebbe l'idrogeno: una vera stella!</span></button>
+    </div>
+  </div>
+  <aside class="notes">Giove è il pianeta più simile al Sole per composizione: è fatto soprattutto di idrogeno ed elio. Per fondere l'idrogeno e diventare una stella dovrebbe essere circa 75 volte più massiccio. Gli basterebbe invece essere 13 volte più massiccio per bruciare il deuterio e diventare una nana bruna. (Cliccate su × 1, × 13 e × 75 per mostrare i tre casi; da sola l'animazione li ripete in ciclo.)</aside>
+</section>
+
+<!-- 5 · DIMENSIONI -->
+<section class="slide" data-scene="dim" aria-label="Le dimensioni">
+  <header class="head"><p class="eyebrow in">Giove · 05</p><h2 class="title in" style="--d:.06s">Le dimensioni</h2></header>
+  <canvas class="fx dim-jup" data-k="jup" style="left:150px;top:150px;width:900px;height:900px"></canvas>
+  <canvas class="fx" data-k="over" style="left:150px;top:150px;width:900px;height:900px"></canvas>
+  <div class="col dim-col">
+    <p class="lead in" style="--d:.2s">Giove è così grande che al suo interno potrebbero entrare <b>più di 1.300 Terre</b>!</p>
+    <div class="stat in" style="--d:.4s"><b class="big" data-k="n11">11</b><p class="body">Terre in fila: il diametro di Giove è circa 11 volte quello terrestre.</p></div>
+    <div class="stat in" style="--d:.6s"><b class="big" data-k="n1300">1.321</b><p class="body">Terre per riempirlo tutto, considerando il volume.</p></div>
+    <button class="ghost in" style="--d:.8s" data-k="replay">↻ Ripeti l'animazione</button>
+  </div>
+  <aside class="notes">Giove è così grande che al suo interno potrebbero entrare più di 1.300 Terre, considerando il volume. Il suo diametro è circa 11 volte quello terrestre. Prima mettiamo 11 Terre in fila da un lato all'altro di Giove, poi lo riempiamo tutto di Terre.</aside>
+</section>
+
+<!-- 6 · STRUTTURA -->
+<section class="slide" data-scene="struttura" aria-label="Com'è fatto dentro">
+  <header class="head"><p class="eyebrow in">Giove · 06</p><h2 class="title in" style="--d:.06s">Com'è fatto dentro</h2></header>
+  <canvas class="fx" data-k="jup" style="left:130px;top:170px;width:860px;height:860px"></canvas>
+  <svg class="fx" viewBox="0 0 1920 1080" style="left:0;top:0;width:1920px;height:1080px;z-index:2" aria-hidden="true">
+    <defs>
+      <radialGradient id="gAtm" gradientUnits="userSpaceOnUse" cx="560" cy="600" r="382"><stop offset=".78" stop-color="#c88a55"/><stop offset=".9" stop-color="#e2b47f"/><stop offset="1" stop-color="#f3dcb2"/></radialGradient>
+      <radialGradient id="gMan" gradientUnits="userSpaceOnUse" cx="560" cy="600" r="382"><stop offset=".2" stop-color="#323a55"/><stop offset=".6" stop-color="#5d6886"/><stop offset=".785" stop-color="#a5afc7"/></radialGradient>
+      <radialGradient id="gCore" gradientUnits="userSpaceOnUse" cx="560" cy="600" r="382"><stop offset="0" stop-color="#ffe4a6"/><stop offset=".18" stop-color="#f08a4c"/><stop offset=".33" stop-color="#e36a42" stop-opacity=".92"/><stop offset=".56" stop-color="#e36a42" stop-opacity="0"/></radialGradient>
+      <clipPath id="wedgeClip"><path data-k="clip" d="M0 0"/></clipPath>
+    </defs>
+    <g clip-path="url(#wedgeClip)">
+      <circle cx="560" cy="600" r="382" fill="url(#gAtm)"/>
+      <circle cx="560" cy="600" r="300" fill="url(#gMan)"/>
+      <circle cx="560" cy="600" r="382" fill="url(#gCore)"/>
+      <circle cx="560" cy="600" r="300" fill="none" stroke="#f4e8d0" stroke-opacity=".35" stroke-width="2" stroke-dasharray="6 8"/>
+    </g>
+    <path data-k="edge" d="M0 0" fill="none" stroke="#0a0c17" stroke-opacity=".55" stroke-width="4"/>
+    <g data-k="leads"></g>
+  </svg>
+  <div class="col layers">
+    <p class="lead in" style="--d:.2s">Non c'è una superficie: scendendo, il gas diventa liquido, perché <b>temperatura e pressione</b> aumentano verso il centro.</p>
+    <div class="layer in" style="--d:1.7s"><i class="dot" style="background:var(--l-atm)"></i><div><h3>Atmosfera</h3><p>Idrogeno ed elio allo stato di gas.</p></div></div>
+    <div class="layer in" style="--d:2s"><i class="dot" style="background:var(--l-man)"></i><div><h3>Mantello</h3><p>Idrogeno liquido «metallico» ed elio. È lui a creare il campo magnetico.</p></div></div>
+    <div class="layer in" style="--d:2.3s"><i class="dot" style="background:var(--l-core)"></i><div><h3>Nucleo</h3><p>Denso e caldissimo. La sonda Juno ha scoperto che forse è «sfumato»: mescolato all'idrogeno, senza un confine netto.</p></div></div>
+  </div>
+  <aside class="notes">Giove è composto principalmente da materia gassosa e liquida. Non c'è una superficie, solo un cambiamento graduale dall'atmosfera: le condizioni passano lentamente da gas a liquido, perché la temperatura e la pressione aumentano sempre di più verso il nucleo. Si pensa che Giove abbia un nucleo denso, ma la sua composizione esatta è sconosciuta. Grazie alla sonda Juno, oggi gli scienziati pensano che non sia una palla di roccia ben separata, ma un nucleo «sfumato», mescolato con l'idrogeno.</aside>
+</section>
+
+<!-- 7 · MAGNETE -->
+<section class="slide" data-scene="magnete" aria-label="Un super magnete">
+  <header class="head"><p class="eyebrow in">Giove · 07</p><h2 class="title in" style="--d:.06s">Un super magnete</h2></header>
+  <svg class="fx" viewBox="0 0 1920 1080" style="left:0;top:0;width:1920px;height:1080px" aria-hidden="true"><g data-k="lines"></g></svg>
+  <canvas class="fx" data-k="jup" style="left:350px;top:390px;width:420px;height:420px"></canvas>
+  <svg class="fx" viewBox="0 0 1920 1080" style="left:0;top:0;width:1920px;height:1080px;z-index:2" aria-hidden="true">
+    <defs><filter id="aurBlur" x="-50%" y="-200%" width="200%" height="500%"><feGaussianBlur stdDeviation="7"/></filter></defs>
+    <g class="aur" filter="url(#aurBlur)">
+      <ellipse cx="560" cy="444" rx="74" ry="15" fill="none" stroke="#b9a6ff" stroke-width="12"/>
+      <ellipse cx="560" cy="756" rx="74" ry="15" fill="none" stroke="#93d3f2" stroke-width="12"/>
+    </g>
+    <g class="aur">
+      <ellipse cx="560" cy="444" rx="74" ry="15" fill="none" stroke="#e6deff" stroke-width="3"/>
+      <ellipse cx="560" cy="756" rx="74" ry="15" fill="none" stroke="#d8f2ff" stroke-width="3"/>
+    </g>
+  </svg>
+  <div class="col mag-col">
+    <p class="lead in" style="--d:.2s">L'idrogeno liquido metallico del mantello si muove e crea un <b>campo magnetico enorme</b>.</p>
+    <div class="stat in" style="--d:.45s"><b class="big">20.000×</b><p class="body">Nel complesso, il «magnete Giove» è quasi 20.000 volte più potente di quello della Terra.</p></div>
+    <div class="stat in" style="--d:.65s"><b class="big">10×</b><p class="body">Vicino alle nubi il campo è più di 10 volte più forte di quello terrestre.</p></div>
+    <p class="small in" style="--d:.85s">Crea anche aurore polari più grandi di tutta la Terra.</p>
+  </div>
+  <aside class="notes">L'idrogeno liquido metallico che si trova nel mantello è responsabile del campo magnetico di Giove, il più potente tra tutti i pianeti. Vicino alle nubi è più di 10 volte più forte di quello della Terra e, nel complesso, il «magnete Giove» è quasi 20.000 volte più potente del nostro. Questo campo magnetico crea aurore polari gigantesche.</aside>
+</section>
+
+<!-- 8 · ATMOSFERA -->
+<section class="slide" data-scene="atmo" aria-label="L'atmosfera">
+  <header class="head"><p class="eyebrow in">Giove · 08</p><h2 class="title in" style="--d:.06s">L'atmosfera</h2></header>
+  <div class="window in" style="left:120px;top:236px;width:1000px;height:760px;--d:.15s">
+    <canvas class="fx" data-k="gl" data-cap="1200" style="left:0;top:0;width:1000px;height:760px"></canvas>
+    <canvas class="fx" data-k="over" style="left:0;top:0;width:1000px;height:760px"></canvas>
+    <span class="tag dark" style="left:24px;top:256px">fascia scura</span>
+    <span class="tag" style="left:24px;top:360px">zona chiara</span>
+    <span class="tag" style="left:24px;bottom:22px">› › direzione dei venti</span>
+  </div>
+  <div class="col atmo-col">
+    <div class="donut in" style="--d:.3s">
+      <svg width="340" height="340" viewBox="0 0 340 340" role="img" aria-label="Composizione: 90% idrogeno, 9% elio, 1% altro">
+        <circle cx="170" cy="170" r="130" fill="none" stroke="rgba(244,232,208,.08)" stroke-width="56"/>
+        <circle class="seg" cx="170" cy="170" r="130" stroke="#eca95c" stroke-dasharray="735.1 1000" style="--d:.5s"/>
+        <circle class="seg" cx="170" cy="170" r="130" stroke="#f4e8d0" stroke-dasharray="73.5 1000" stroke-dashoffset="-735.1" style="--d:1.4s"/>
+        <circle class="seg" cx="170" cy="170" r="130" stroke="#e36a42" stroke-dasharray="8.2 1000" stroke-dashoffset="-808.6" style="--d:1.8s"/>
+        <text x="170" y="178" text-anchor="middle" fill="#f4e8d0" style="font:800 72px var(--f-display)">90%</text>
+        <text x="170" y="222" text-anchor="middle" fill="#b6ac99" style="font:400 26px var(--f-body)">idrogeno</text>
+      </svg>
+      <ul class="legend">
+        <li><i style="background:var(--ochre)"></i><span><b>90%</b> idrogeno</span></li>
+        <li><i style="background:var(--cream)"></i><span><b>9%</b> elio</span></li>
+        <li><i style="background:var(--rust)"></i><span><b>1%</b> altro</span></li>
+      </ul>
+    </div>
+    <p class="body in" style="--d:.6s">Oltre a idrogeno ed elio ci sono, in piccola parte, <b>zolfo e azoto</b>.</p>
+    <p class="body in" style="--d:.8s">Forti venti muovono nubi e macchie in <b>bande parallele</b>, con colori chiari e scuri alternati.</p>
+  </div>
+  <aside class="notes">L'atmosfera di Giove è composta principalmente dal 90% di idrogeno, dal 9% di elio e, in misura minore, da zolfo e azoto. A causa di forti venti, nell'atmosfera si vedono nubi e macchie che si muovono in bande parallele, alternando colori chiari e scuri. Le frecce mostrano che i venti di bande vicine soffiano in direzioni opposte.</aside>
+</section>
+
+<!-- 9 · GRANDE MACCHIA ROSSA -->
+<section class="slide" data-scene="grs" aria-label="La Grande Macchia Rossa">
+  <header class="head"><p class="eyebrow in">Giove · 09</p><h2 class="title in" style="--d:.06s">La Grande Macchia Rossa</h2></header>
+  <div class="window in" style="left:120px;top:236px;width:1080px;height:760px;--d:.15s">
+    <canvas class="fx" data-k="gl" data-cap="1200" style="left:0;top:0;width:1080px;height:760px"></canvas>
+    <canvas class="fx" data-k="over" style="left:0;top:0;width:1080px;height:760px"></canvas>
+    <span class="tag" style="left:24px;bottom:22px">Macchia Rossa e Terra in scala</span>
+  </div>
+  <div class="col grs-col">
+    <p class="lead in" style="--d:.2s">Un'enorme tempesta nell'emisfero Sud di Giove.</p>
+    <ul class="facts">
+      <li class="in" style="--d:.4s">Gira in senso antiorario, con venti fortissimi.</li>
+      <li class="in" style="--d:.55s">È più larga di tutta la Terra: circa 14.000 km.</li>
+      <li class="in" style="--d:.7s">La osserviamo da almeno 190 anni.</li>
+      <li class="in" style="--d:.85s">Si sta rimpicciolendo: nel 1879 era lunga circa 39.000 km.</li>
+    </ul>
+    <p class="small in" style="--d:1s">Nel 1665 l'italiano Giovanni Domenico Cassini vide una macchia simile, ma secondo uno studio del 2024 era un'altra tempesta.</p>
+  </div>
+  <aside class="notes">Nell'atmosfera ci sono strutture ovali che assomigliano a cicloni. La più famosa è la Grande Macchia Rossa: una tempesta enorme nell'emisfero Sud di Giove, più larga di tutta la Terra. La osserviamo da almeno 190 anni. Nel 1665 l'astronomo italiano Giovanni Domenico Cassini vide una macchia simile, ma secondo uno studio del 2024 si trattava di un'altra tempesta.</aside>
+</section>
+
+<!-- 10 · LUNE -->
+<section class="slide" data-scene="lune" aria-label="Le lune di Giove">
+  <header class="head"><p class="eyebrow in">Giove · 10</p><h2 class="title in" style="--d:.06s">Più di 100 lune</h2></header>
+  <p class="body sub in" style="--d:.2s">Le 4 più grandi le ha scoperte l'italiano <b>Galileo Galilei</b> nel 1610, con un telescopio.</p>
+  <canvas class="fx" data-k="back" style="left:0;top:255px;width:1920px;height:360px"></canvas>
+  <canvas class="fx" data-k="jup" style="left:790px;top:265px;width:340px;height:340px"></canvas>
+  <canvas class="fx" data-k="front" style="left:0;top:255px;width:1920px;height:360px"></canvas>
+  <div class="mcards">
+    <article class="mcard in" style="--d:.5s"><span class="mwrap io"><canvas data-moon="io" style="width:116px;height:116px"></canvas></span><div><h3>Io</h3><p>È ricoperta da numerosi vulcani attivi.</p></div></article>
+    <article class="mcard in" style="--d:.65s"><span class="mwrap"><canvas data-moon="europa" style="width:116px;height:116px"></canvas></span><div><h3>Europa</h3><p>Ha uno strato di ghiaccio e sotto potrebbe avere un oceano d'acqua.</p></div></article>
+    <article class="mcard in" style="--d:.8s"><span class="mwrap"><canvas data-moon="ganimede" style="width:116px;height:116px"></canvas></span><div><h3>Ganimede</h3><p>È la luna più grande di tutto il Sistema Solare.</p></div></article>
+    <article class="mcard in" style="--d:.95s"><span class="mwrap"><canvas data-moon="callisto" style="width:116px;height:116px"></canvas></span><div><h3>Callisto</h3><p>La sua superficie è ricoperta da moltissimi crateri.</p></div></article>
+  </div>
+  <aside class="notes">Giove ha più di 100 lune conosciute. Le quattro più grandi furono osservate nel 1610 dall'astronomo italiano Galileo Galilei, grazie a un telescopio. Si chiamano: Io, ricoperta da numerosi vulcani attivi; Europa, ricoperta da uno strato di ghiaccio, che potrebbe avere un oceano d'acqua sotto la superficie; Ganimede, la luna più grande di tutto il Sistema Solare; Callisto, la cui superficie è ricoperta da moltissimi crateri. Nell'animazione le lune girano con le velocità vere, accelerate: Io è la più veloce, Callisto la più lenta.</aside>
+</section>
+
+<!-- 11 · ANELLI -->
+<section class="slide" data-scene="anelli" aria-label="Gli anelli di Giove">
+  <header class="head"><p class="eyebrow in">Giove · 11</p><h2 class="title in" style="--d:.06s">Gli anelli di Giove</h2></header>
+  <canvas class="fx" data-k="back" style="left:0;top:0;width:1920px;height:1080px"></canvas>
+  <canvas class="fx" data-k="jup" style="left:240px;top:330px;width:560px;height:560px"></canvas>
+  <canvas class="fx" data-k="front" style="left:0;top:0;width:1920px;height:1080px"></canvas>
+  <div class="cmp in" style="--d:.9s">
+    <div><canvas data-k="satMini" style="width:150px;height:110px"></canvas><p><b>Saturno</b>anelli larghi e brillanti, di ghiaccio</p></div>
+    <div><canvas data-k="jupMini" style="width:150px;height:110px"></canvas><p><b>Giove</b>anelli sottili e scuri, di polvere</p></div>
+  </div>
+  <div class="col ring-col">
+    <p class="lead in" style="--d:.2s">Anche Giove ha degli anelli! Li ha scoperti la sonda <b>Voyager 1</b> nel 1979.</p>
+    <ul class="facts">
+      <li class="in" style="--d:.45s">Sono sottili, scuri e quasi invisibili.</li>
+      <li class="in" style="--d:.6s">Sono fatti di polvere finissima: si forma quando piccoli meteoriti colpiscono le lune più vicine a Giove.</li>
+      <li class="in" style="--d:.75s">L'anello principale si trova a più di 50.000 km sopra le nubi.</li>
+    </ul>
+  </div>
+  <aside class="notes">Le sonde inviate per osservare il pianeta hanno scoperto che Giove è circondato da un sistema di anelli: la prima a vederli è stata la Voyager 1, nel 1979. Sono sottili, scuri e quasi invisibili, molto diversi da quelli di Saturno. Sono fatti di particelle di polvere piccolissime, che si formano quando piccoli meteoriti colpiscono le lune più vicine a Giove: guardate i lampi nell'animazione. L'anello principale si trova a più di 50.000 km sopra le nubi.</aside>
+</section>
+
+<!-- 12 · JUNO -->
+<section class="slide" data-scene="juno" aria-label="La sonda Juno">
+  <header class="head"><p class="eyebrow in">Giove · 12</p><h2 class="title in" style="--d:.06s">La sonda Juno</h2></header>
+  <canvas class="fx" data-k="jup" style="left:360px;top:360px;width:520px;height:520px"></canvas>
+  <canvas class="fx" data-k="over" style="left:0;top:0;width:1920px;height:1080px"></canvas>
+  <div class="col juno-col">
+    <p class="lead in" style="--d:.2s">Gli scienziati studiano Giove con telescopi e sonde spaziali. Una di queste è <b>Juno</b>, una sonda della NASA.</p>
+    <div class="juno-row in" style="--d:.4s">
+      <svg width="240" height="240" viewBox="-190 -190 380 380" role="img" aria-label="Disegno della sonda Juno che ruota su se stessa">
+        <g class="juno-spin">
+          <g id="arm">
+            <rect x="44" y="-19" width="118" height="38" rx="3" fill="#26385a" stroke="#9fb3d1" stroke-width="3"/>
+            <path d="M74 -19V19M104 -19V19M134 -19V19M44 0H162" stroke="#5e7cb2" stroke-width="2"/>
+          </g>
+          <use href="#arm" transform="rotate(120)"/>
+          <use href="#arm" transform="rotate(240)"/>
+          <rect x="160" y="-12" width="22" height="24" fill="none" stroke="#e7d9b6" stroke-width="3"/>
+          <polygon points="40,0 20,34.6 -20,34.6 -40,0 -20,-34.6 20,-34.6" fill="#b88f4a" stroke="#e7d9b6" stroke-width="3"/>
+          <circle r="30" fill="#ece6da"/>
+          <circle r="20" fill="none" stroke="#b9b2a4" stroke-width="2"/>
+          <circle r="10" fill="none" stroke="#b9b2a4" stroke-width="2"/>
+          <circle r="4" fill="#6c665c"/>
+        </g>
+      </svg>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <p class="kicker">Raccoglie dati su</p>
+        <ul class="chips"><li><i></i>l'atmosfera</li><li><i></i>il campo magnetico</li><li><i></i>la struttura interna</li></ul>
+      </div>
+    </div>
+    <div class="timeline in" style="--d:.6s">
+      <div class="when"><b>2011</b><span>partenza</span></div>
+      <div class="trip"><span>5 anni, quasi 2,8 miliardi di km</span></div>
+      <div class="when"><b>2016</b><span>arrivo a Giove</span></div>
+    </div>
+    <div class="box in" style="--d:.8s">
+      <p class="kicker">Lo sapevi?</p>
+      <p class="small" style="color:var(--cream)">A bordo viaggiano tre omini LEGO (Galileo, Giove e Giunone) e una targa dedicata a Galileo, regalata dall'Agenzia Spaziale Italiana.</p>
+    </div>
+  </div>
+  <aside class="notes">Gli scienziati studiano Giove con telescopi e sonde spaziali. Una di queste è Juno, una sonda della NASA arrivata vicino al pianeta nel 2016. Juno raccoglie informazioni sulla sua atmosfera, sui suoi campi magnetici e sulla sua struttura interna. Il disegno gira perché Juno ruota davvero su se stessa, 2 volte al minuto. La linea tratteggiata è la sua orbita: passa vicinissima a Giove, sopra i poli, e poi si allontana. Curiosità: a bordo ci sono tre omini LEGO (Galileo, Giove e Giunone) e una targa dedicata a Galileo, regalata dall'Agenzia Spaziale Italiana.</aside>
+</section>
+
+<!-- 13 · CONCLUSIONE -->
+<section class="slide" data-scene="fine" aria-label="Conclusione">
+  <header class="head"><p class="eyebrow in">Giove · 13</p><h2 class="title in" style="--d:.06s">Conclusione</h2></header>
+  <canvas class="fx" data-k="back" style="left:0;top:0;width:1920px;height:1080px"></canvas>
+  <canvas class="fx" data-k="jup" data-cap="1200" style="left:880px;top:90px;width:1000px;height:1000px"></canvas>
+  <canvas class="fx" data-k="front" style="left:0;top:0;width:1920px;height:1080px"></canvas>
+  <div class="col end-col">
+    <p class="quote in" style="--d:.2s">Giove è un pianeta <em>straordinario</em>, enorme e pieno di misteri.</p>
+    <p class="body in" style="--d:.45s">Le sue tempeste, le sue numerose lune e i suoi anelli lo rendono uno degli oggetti più interessanti del Sistema Solare.</p>
+    <p class="body in" style="--d:.65s">Studiare Giove aiuta gli scienziati a conoscere meglio i pianeti e la storia del nostro Sistema Solare.</p>
+  </div>
+  <aside class="notes">Giove è un pianeta straordinario, enorme e pieno di misteri. Le sue tempeste, le sue numerose lune e i suoi anelli lo rendono uno degli oggetti più interessanti del Sistema Solare. Studiare Giove aiuta gli scienziati a conoscere meglio i pianeti e la storia del nostro Sistema Solare.</aside>
+</section>
+
+<!-- 14 · QUIZ -->
+<section class="slide" data-scene="quiz" aria-label="Quiz lampo">
+  <header class="head"><p class="eyebrow in">Giove · 14</p><h2 class="title in" style="--d:.06s">Quiz lampo!</h2></header>
+  <div class="quiz">
+    <button class="qcard in" style="--d:.2s" aria-pressed="false"><span class="qinner"><span class="qf"><span class="kicker">Domanda 1</span><span class="lead">Quante Terre potrebbero entrare dentro Giove?</span><span class="small">Tocca per la risposta</span></span><span class="qb"><span class="kicker">Risposta</span><strong>Più di 1.300!</strong><span class="small">Considerando il volume.</span></span></span></button>
+    <button class="qcard in" style="--d:.3s" aria-pressed="false"><span class="qinner"><span class="qf"><span class="kicker">Domanda 2</span><span class="lead">Chi ha scoperto le 4 lune più grandi di Giove?</span><span class="small">Tocca per la risposta</span></span><span class="qb"><span class="kicker">Risposta</span><strong>Galileo Galilei</strong><span class="small">Nel 1610, con un telescopio.</span></span></span></button>
+    <button class="qcard in" style="--d:.4s" aria-pressed="false"><span class="qinner"><span class="qf"><span class="kicker">Domanda 3</span><span class="lead">Quanto dura un giorno su Giove?</span><span class="small">Tocca per la risposta</span></span><span class="qb"><span class="kicker">Risposta</span><strong>9 ore e 55 minuti</strong><span class="small">Il giorno più corto di tutti i pianeti.</span></span></span></button>
+    <button class="qcard in" style="--d:.5s" aria-pressed="false"><span class="qinner"><span class="qf"><span class="kicker">Domanda 4</span><span class="lead">Come si chiama la sonda della NASA che studia Giove?</span><span class="small">Tocca per la risposta</span></span><span class="qb"><span class="kicker">Risposta</span><strong>Juno</strong><span class="small">È arrivata a Giove nel 2016.</span></span></span></button>
+  </div>
+  <aside class="notes">Ora tocca a voi! Leggiamo le domande e lasciamo rispondere i compagni, poi tocchiamo la carta per scoprire la risposta giusta.</aside>
+</section>
+
+<!-- 15 · GRAZIE -->
+<section class="slide" data-scene="grazie" aria-label="Grazie">
+  <canvas class="fx" data-k="jup" data-cap="1500" style="left:0;top:0;width:1920px;height:1080px"></canvas>
+  <div class="thanks">
+    <h2 aria-label="Grazie!"><span class="banded">Grazie!</span></h2>
+    <p class="lead in" style="--d:.4s">Avete domande?</p>
+    <ul class="team in" style="--d:.7s"><li><span class="ini">R</span>Razvan</li><li><span class="ini">S</span>Sofia</li><li><span class="ini">R</span>Riccardo</li><li><span class="ini">I</span>Idir</li></ul>
+  </div>
+  <p class="small credits fade" style="--d:1s">Fonti: NASA Science e i materiali di ricerca del gruppo.</p>
+  <aside class="notes">Grazie per l'attenzione! Avete domande?</aside>
+</section>
+
+<div id="progress" aria-hidden="true"><i></i></div>
+<div id="notesPanel" hidden><p class="kicker">Note per chi parla</p><p data-k="notesText"></p></div>
+<nav id="ui" aria-label="Comandi della presentazione">
+  <button id="prevBtn" aria-label="Slide precedente">‹</button>
+  <span id="count" aria-live="polite">1 / 15</span>
+  <button id="nextBtn" aria-label="Slide successiva">›</button>
+  <button id="notesBtn" aria-pressed="false" title="Note per chi parla (tasto N)">Note</button>
+  <button id="fsBtn" title="Schermo intero (tasto F)">Schermo intero</button>
+</nav>
+</div>
+</div>
+
+<script>
+(function(){
+'use strict';
+var TAU = Math.PI * 2;
+function $(s, r){ return (r || document).querySelector(s); }
+function $$(s, r){ return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+function clamp(v, a, b){ return Math.min(b, Math.max(a, v)); }
+function easeOut(k){ k = clamp(k, 0, 1); return 1 - Math.pow(1 - k, 3); }
+function easeInOut(k){ k = clamp(k, 0, 1); return k < .5 ? 4*k*k*k : 1 - Math.pow(-2*k + 2, 3) / 2; }
+function smooth(k){ k = clamp(k, 0, 1); return k*k*(3 - 2*k); }
+function backOut(k){ k = clamp(k, 0, 1); var c1 = 1.70158, c3 = c1 + 1; return 1 + c3*Math.pow(k - 1, 3) + c1*Math.pow(k - 1, 2); }
+function rng(seed){ var a = seed >>> 0; return function(){ a = (a + 0x6D2B79F5) >>> 0; var t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+var BODY_FONT = '"Atkinson Hyperlegible","Segoe UI",Verdana,sans-serif';
+
+var deck = $('#deck'), stage = $('#stage');
+var slides = $$('.slide');
+var N = slides.length;
+var reduce = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+var cur = -1, scale = 1, quality = 1, t0 = performance.now();
+
+/* ---------- canvas ---------- */
+function sizeCanvas(c){
+  var w = c._w || (c._w = parseFloat(c.style.width) || c.offsetWidth || 2);
+  var h = c._h || (c._h = parseFloat(c.style.height) || c.offsetHeight || 2);
+  var k = scale * Math.min(window.devicePixelRatio || 1, 2) * quality;
+  var cap = +(c.getAttribute('data-cap') || 1920);
+  k = Math.min(k, cap / Math.max(w, h));
+  var W = Math.max(2, Math.round(w * k)), H = Math.max(2, Math.round(h * k));
+  if (c.width !== W || c.height !== H){ c.width = W; c.height = H; }
+  c._k = W / w;
+}
+function freeCanvas(c){ if (c.width > 2){ c.width = 2; c.height = 2; c._k = 2 / c._w; } }
+function ctx(c){ var x = c._x || (c._x = c.getContext('2d')); x.setTransform(c._k || 1, 0, 0, c._k || 1, 0, 0); return x; }
+function clear(c){ var x = ctx(c); x.clearRect(0, 0, c._w, c._h); return x; }
+
+/* ---------- Giove in WebGL (un solo contesto condiviso) ---------- */
+var FS = [
+'precision highp float;',
+'uniform vec2 uC; uniform float uR; uniform float uT; uniform float uRot; uniform float uStar;',
+'uniform float uFlat; uniform vec3 uFV; uniform vec2 uL; uniform float uGrs; uniform float uTilt;',
+'float h3(vec3 p){ p = fract(p*0.3183099 + vec3(0.71,0.113,0.419)); p *= 17.0; return fract(p.x*p.y*p.z*(p.x+p.y+p.z)); }',
+'float vn(vec3 x){ vec3 i = floor(x); vec3 f = fract(x); f = f*f*(3.0-2.0*f);',
+'  return mix(mix(mix(h3(i),h3(i+vec3(1.,0.,0.)),f.x),mix(h3(i+vec3(0.,1.,0.)),h3(i+vec3(1.,1.,0.)),f.x),f.y),',
+'             mix(mix(h3(i+vec3(0.,0.,1.)),h3(i+vec3(1.,0.,1.)),f.x),mix(h3(i+vec3(0.,1.,1.)),h3(i+vec3(1.,1.,1.)),f.x),f.y),f.z); }',
+'float fbm(vec3 p){ float s = 0.0, a = 0.5; for (int i = 0; i < 5; i++){ s += a*vn(p); p = p*2.03 + vec3(3.1,1.7,5.3); a *= 0.5; } return s; }',
+'float bnd(float x, float lo, float hi, float s){ return smoothstep(lo-s, lo+s, x)*(1.0-smoothstep(hi-s, hi+s, x)); }',
+'vec3 sph(float lat, float lon){ float a = radians(lat), o = radians(lon); return vec3(cos(a)*sin(o), sin(a), cos(a)*cos(o)); }',
+'float jet(float lat){ return 0.5*sin(lat*0.157) + 0.2*sin(lat*0.401); }',
+'vec3 bands(float lat, float lon, float t){',
+'  float lonF = lon + jet(lat)*t;',
+'  vec3 p = sph(lat, lonF);',
+'  float w = fbm(vec3(p.x*2.6, p.y*8.0, p.z*2.6) + vec3(0.0, 0.0, t*0.015));',
+'  float latW = lat + (w - 0.5)*8.0;',
+'  float s = fbm(vec3(p.x*5.0, p.y*34.0, p.z*5.0) + w*2.0);',
+'  vec3 cream = vec3(0.95,0.90,0.80), zone = vec3(0.90,0.82,0.68), belt = vec3(0.68,0.44,0.28), beltD = vec3(0.50,0.31,0.21), orng = vec3(0.84,0.57,0.34), pol = vec3(0.50,0.52,0.56);',
+'  vec3 c = cream;',
+'  c = mix(c, orng, bnd(latW, 6.5, 17.0, 1.8));',
+'  c = mix(c, belt, bnd(latW, -19.5, -7.0, 1.8));',
+'  c = mix(c, zone, bnd(latW, 17.0, 23.0, 1.4));',
+'  c = mix(c, beltD, bnd(latW, 23.5, 29.0, 1.2));',
+'  c = mix(c, zone, bnd(latW, -26.5, -19.5, 1.4));',
+'  c = mix(c, belt*1.08, bnd(latW, -33.5, -27.0, 1.2));',
+'  c = mix(c, vec3(0.76,0.66,0.53), bnd(latW, 33.0, 40.0, 1.5));',
+'  c = mix(c, vec3(0.74,0.64,0.53), bnd(latW, -45.0, -37.5, 1.5));',
+'  c = mix(c, pol, smoothstep(46.0, 66.0, abs(latW)));',
+'  float fe = smoothstep(0.62, 0.8, vn(sph(lat, lonF)*vec3(16.0, 26.0, 16.0))) * bnd(lat, 4.5, 7.5, 0.8);',
+'  c = mix(c, vec3(0.52,0.54,0.60), fe*0.3);',
+'  float s2 = vn(vec3(p.x*18.0, p.y*110.0, p.z*18.0) + w*4.0);',
+'  c *= 0.9 + 0.2*s2;',
+'  float lm = mod(lonF + 9.0, 40.0) - 20.0;',
+'  float dp = length(vec2(lm*0.75, (lat + 40.5)*1.1));',
+'  c = mix(c, vec3(0.97,0.95,0.92), (1.0 - smoothstep(1.2, 2.2, dp))*0.85);',
+'  return c*(0.80 + 0.40*s);',
+'}',
+'vec3 grsCol(vec2 l, float r, float t){',
+'  vec3 c = bands(-22.0 + l.y*4.4, uGrs + l.x*6.0, t);',
+'  float n = fbm(vec3(l*3.2, 1.7))*0.65 + fbm(vec3(l*9.0, 5.1))*0.35;',
+'  vec3 red = mix(vec3(0.72,0.30,0.18), vec3(0.86,0.52,0.36), smoothstep(0.55, 0.05, r)*0.6 + n*0.3);',
+'  float core = 1.0 - smoothstep(0.78, 1.02, r + (n - 0.5)*0.18);',
+'  c = mix(c, red*(0.85 + 0.3*n), core);',
+'  c = mix(c, vec3(0.96,0.92,0.84), bnd(r, 1.0, 1.32, 0.12)*0.45);',
+'  return c;',
+'}',
+'vec3 surface(float lat, float lon, float t){',
+'  float dl = mod(lon - uGrs + 180.0, 360.0) - 180.0;',
+'  vec2 l = vec2(dl/6.0, (lat + 22.0)/4.4);',
+'  float r = length(l);',
+'  if (r > 1.7) return bands(lat, lon, t);',
+'  float T = 26.0;',
+'  float p1 = fract(t/T), p2 = fract(t/T + 0.5);',
+'  float om = 0.32*(1.0 - smoothstep(0.15, 1.5, r));',
+'  float a1 = p1*T*om, a2 = p2*T*om;',
+'  vec2 l1 = mat2(cos(a1), -sin(a1), sin(a1), cos(a1))*l;',
+'  vec2 l2 = mat2(cos(a2), -sin(a2), sin(a2), cos(a2))*l;',
+'  float w = 1.0 - abs(2.0*p1 - 1.0);',
+'  return mix(grsCol(l2, r, t), grsCol(l1, r, t), w);',
+'}',
+'void main(){',
+'  vec2 fc = gl_FragCoord.xy;',
+'  if (uFlat > 0.5){',
+'    vec2 d = (fc - uC)*uFV.z;',
+'    float lat = uFV.y + d.y/1230.0;',
+'    float lon = uFV.x + d.x/(1247.7*cos(radians(uFV.y)));',
+'    gl_FragColor = vec4(surface(lat, lon, uT), 1.0);',
+'    return;',
+'  }',
+'  vec2 q = (fc - uC)/uR;',
+'  float rr = length(q);',
+'  float s1 = clamp(uStar, 0.0, 1.0), s2 = clamp(uStar - 1.0, 0.0, 1.0);',
+'  float gk = mix(mix(38.0, 7.0, s1), 3.2, s2);',
+'  float ga = mix(mix(0.10, 0.55, s1), 0.95, s2);',
+'  vec3 gc = mix(mix(vec3(0.95,0.85,0.70), vec3(0.75,0.12,0.20), s1), vec3(1.0,0.78,0.42), s2);',
+'  float g = exp(-max(rr - 1.0, 0.0)*gk)*ga;',
+'  float edge = clamp((1.0 - rr)*uR + 0.5, 0.0, 1.0);',
+'  if (edge <= 0.0 && g < 0.002){ gl_FragColor = vec4(0.0); return; }',
+'  vec3 col = vec3(0.0);',
+'  if (edge > 0.0){',
+'    float z = sqrt(max(0.0, 1.0 - rr*rr));',
+'    vec3 n = vec3(q, z);',
+'    vec3 m = vec3(n.x, n.y*cos(uTilt) - n.z*sin(uTilt), n.y*sin(uTilt) + n.z*cos(uTilt));',
+'    float lat = degrees(asin(clamp(m.y, -1.0, 1.0)));',
+'    float lon = degrees(atan(m.x, m.z)) - uRot;',
+'    vec3 c = surface(lat, lon, uT);',
+'    vec3 L = normalize(vec3(uL, 0.75));',
+'    float li = smoothstep(-0.18, 0.62, dot(n, L));',
+'    vec3 lit = c*mix(0.025, 1.0, li)*(0.6 + 0.4*pow(z, 0.45));',
+'    float lum = dot(c, vec3(0.3, 0.5, 0.2));',
+'    vec3 bd = mix(vec3(0.30,0.04,0.09), vec3(0.88,0.26,0.30), lum)*(0.55 + 0.45*pow(z, 0.5));',
+'    float gr = fbm(n*14.0 + vec3(uT*0.25));',
+'    vec3 st = vec3(1.0, 0.86, 0.60)*(0.80 + 0.35*gr)*(0.62 + 0.38*pow(z, 0.35));',
+'    col = mix(lit, bd, s1);',
+'    col = mix(col, st, s2);',
+'  }',
+'  gl_FragColor = vec4(col*edge + gc*g*(1.0 - edge), edge + g*(1.0 - edge));',
+'}'
+].join('\n');
+
+var JUP = (function(){
+  var cv = document.createElement('canvas'), gl = null;
+  try { gl = cv.getContext('webgl', { alpha: true, premultipliedAlpha: true, antialias: false, preserveDrawingBuffer: true }); } catch (e) { gl = null; }
+  if (!gl) return null;
+  function sh(type, src){ var s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)){ console.warn(gl.getShaderInfoLog(s)); return null; } return s; }
+  var vs = sh(gl.VERTEX_SHADER, 'attribute vec2 p;void main(){gl_Position=vec4(p,0.0,1.0);}'), fs = sh(gl.FRAGMENT_SHADER, FS);
+  if (!vs || !fs) return null;
+  var pr = gl.createProgram(); gl.attachShader(pr, vs); gl.attachShader(pr, fs); gl.linkProgram(pr);
+  if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) return null;
+  gl.useProgram(pr);
+  var b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+  var loc = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+  var U = {}; ['uC','uR','uT','uRot','uStar','uFlat','uFV','uL','uGrs','uTilt'].forEach(function(n){ U[n] = gl.getUniformLocation(pr, n); });
+  var W = 0, H = 0, lost = false;
+  cv.addEventListener('webglcontextlost', function(e){ e.preventDefault(); lost = true; });
+  return function(target, o){
+    if (lost) return false;
+    var w = target.width, h = target.height, k = target._k || 1;
+    if (w > W || h > H){ W = Math.max(W, w); H = Math.max(H, h); cv.width = W; cv.height = H; }
+    gl.viewport(0, 0, w, h);
+    gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.uniform2f(U.uC, (o.cx || 0) * k, h - (o.cy || 0) * k);
+    gl.uniform1f(U.uR, (o.r || 1) * k);
+    gl.uniform1f(U.uT, o.t || 0);
+    gl.uniform1f(U.uRot, o.rot || 0);
+    gl.uniform1f(U.uStar, o.star || 0);
+    gl.uniform1f(U.uFlat, o.flat ? 1 : 0);
+    gl.uniform3f(U.uFV, o.flat ? o.flat.lon : 0, o.flat ? o.flat.lat : 0, o.flat ? o.flat.kmpp / k : 1);
+    gl.uniform2f(U.uL, o.lx == null ? -0.55 : o.lx, o.ly == null ? 0.3 : o.ly);
+    gl.uniform1f(U.uGrs, o.grs == null ? 40 : o.grs);
+    gl.uniform1f(U.uTilt, o.tilt || 0);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    var x = target._x || (target._x = target.getContext('2d'));
+    x.setTransform(1, 0, 0, 1, 0, 0);
+    x.clearRect(0, 0, w, h);
+    x.drawImage(cv, 0, H - h, w, h, 0, 0, w, h);
+    return true;
+  };
+})();
+
+/* Riserva senza WebGL: Giove a bande disegnato in 2D */
+var BAND_STOPS = [[0,'#80838a'],[.16,'#b9ab95'],[.26,'#e9dcc3'],[.33,'#9c6a45'],[.38,'#e2cfae'],[.45,'#c98f5c'],[.5,'#f2e6d0'],[.58,'#a86f48'],[.66,'#e6d4b6'],[.71,'#b5845d'],[.8,'#d9c7a8'],[1,'#7c7f86']];
+function jup2d(c, o){
+  var x = clear(c), g, i;
+  if (o.flat){
+    g = x.createLinearGradient(0, 0, 0, c._h);
+    for (i = 0; i < BAND_STOPS.length; i++) g.addColorStop(BAND_STOPS[i][0], BAND_STOPS[i][1]);
+    x.fillStyle = g; x.fillRect(0, 0, c._w, c._h); return;
+  }
+  x.save(); x.beginPath(); x.arc(o.cx, o.cy, o.r, 0, TAU); x.clip();
+  g = x.createLinearGradient(0, o.cy - o.r, 0, o.cy + o.r);
+  for (i = 0; i < BAND_STOPS.length; i++) g.addColorStop(BAND_STOPS[i][0], BAND_STOPS[i][1]);
+  x.fillStyle = g; x.fillRect(o.cx - o.r, o.cy - o.r, o.r*2, o.r*2);
+  var s = o.star || 0;
+  if (s > 0){ x.globalAlpha = Math.min(1, s) * .8; x.fillStyle = s > 1.5 ? '#ffd27a' : '#8a1f33'; x.fillRect(o.cx - o.r, o.cy - o.r, o.r*2, o.r*2); x.globalAlpha = 1; }
+  g = x.createRadialGradient(o.cx - o.r*.35, o.cy - o.r*.3, o.r*.1, o.cx, o.cy, o.r);
+  g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,' + (s > 1.5 ? .15 : .7) + ')');
+  x.fillStyle = g; x.fillRect(o.cx - o.r, o.cy - o.r, o.r*2, o.r*2);
+  x.restore();
+}
+function jupiter(c, o){ if (!(JUP && JUP(c, o))) jup2d(c, o); }
+
+/* ---------- sprite di lune e pianeti ---------- */
+function sprite(R, seed, paint){
+  var c = document.createElement('canvas'); c.width = c.height = R*2;
+  var x = c.getContext('2d'), r = rng(seed);
+  x.save(); x.beginPath(); x.arc(R, R, R - .5, 0, TAU); x.clip();
+  paint(x, R, r);
+  var g = x.createRadialGradient(R*.62, R*.66, R*.05, R, R, R*1.04);
+  g.addColorStop(0, 'rgba(255,255,255,.10)'); g.addColorStop(.45, 'rgba(0,0,0,0)'); g.addColorStop(.8, 'rgba(0,0,0,.35)'); g.addColorStop(1, 'rgba(0,0,0,.82)');
+  x.fillStyle = g; x.fillRect(0, 0, R*2, R*2);
+  x.restore();
+  return c;
+}
+function dots(x, R, r, n, col, a0, a1, s0, s1){
+  x.fillStyle = col;
+  for (var i = 0; i < n; i++){ x.globalAlpha = a0 + r()*(a1 - a0); x.beginPath(); x.arc(r()*R*2, r()*R*2, R*(s0 + r()*(s1 - s0)), 0, TAU); x.fill(); }
+  x.globalAlpha = 1;
+}
+function paintEarth(x, R, r){
+  var g = x.createRadialGradient(R*.7, R*.7, R*.1, R, R, R);
+  g.addColorStop(0, '#3b86cf'); g.addColorStop(1, '#1b4c8a');
+  x.fillStyle = g; x.fillRect(0, 0, R*2, R*2);
+  x.filter = 'blur(' + (R*.01).toFixed(2) + 'px)';
+  [[.55, .62, '#4c8a3b'], [1.38, .72, '#5d9442'], [1.12, 1.32, '#b39860'], [.62, 1.32, '#4f8a3d'], [1.55, 1.48, '#6c9a48']].forEach(function(cn){
+    x.fillStyle = cn[2];
+    for (var j = 0; j < 30; j++){ x.beginPath(); x.arc(R*cn[0] + (r() - .5)*R*.55, R*cn[1] + (r() - .5)*R*.42, R*(.035 + r()*.1), 0, TAU); x.fill(); }
+  });
+  x.fillStyle = 'rgba(240,246,250,.95)';
+  x.beginPath(); x.ellipse(R, R*.03, R*.95, R*.2, 0, 0, TAU); x.fill();
+  x.beginPath(); x.ellipse(R, R*1.97, R*.95, R*.2, 0, 0, TAU); x.fill();
+  x.filter = 'blur(' + (R*.025).toFixed(2) + 'px)';
+  x.strokeStyle = 'rgba(255,255,255,.72)'; x.lineCap = 'round';
+  for (var k = 0; k < 16; k++){ x.lineWidth = R*(.03 + r()*.05); x.beginPath(); var a = r()*TAU; x.arc(r()*R*2, r()*R*2, R*(.15 + r()*.35), a, a + .6 + r()*.8); x.stroke(); }
+  x.filter = 'none';
+  x.strokeStyle = 'rgba(150,205,255,.55)'; x.lineWidth = R*.06; x.beginPath(); x.arc(R, R, R*.97, 0, TAU); x.stroke();
+}
+var SPR = {
+  earth: sprite(48, 11, paintEarth),
+  earthBig: sprite(180, 11, paintEarth),
+  io: sprite(64, 21, function(x, R, r){
+    x.fillStyle = '#e8c85c'; x.fillRect(0, 0, R*2, R*2);
+    dots(x, R, r, 30, '#d58430', .45, .85, .04, .16);
+    dots(x, R, r, 14, '#f6efd2', .5, .9, .03, .09);
+    dots(x, R, r, 16, '#3a2a1c', .7, 1, .02, .05);
+  }),
+  europa: sprite(64, 31, function(x, R, r){
+    x.fillStyle = '#ece3d1'; x.fillRect(0, 0, R*2, R*2);
+    dots(x, R, r, 10, '#c9ab86', .25, .5, .1, .3);
+    x.strokeStyle = 'rgba(150,84,56,.65)'; x.lineCap = 'round';
+    for (var i = 0; i < 18; i++){ x.lineWidth = R*(.015 + r()*.025); x.beginPath(); x.moveTo(r()*R*2, r()*R*2); x.bezierCurveTo(r()*R*2, r()*R*2, r()*R*2, r()*R*2, r()*R*2, r()*R*2); x.stroke(); }
+  }),
+  ganimede: sprite(64, 41, function(x, R, r){
+    x.fillStyle = '#8f8376'; x.fillRect(0, 0, R*2, R*2);
+    dots(x, R, r, 9, '#5d544b', .6, .9, .15, .38);
+    dots(x, R, r, 40, '#d2c8b6', .3, .8, .02, .07);
+  }),
+  callisto: sprite(64, 51, function(x, R, r){
+    x.fillStyle = '#51473e'; x.fillRect(0, 0, R*2, R*2);
+    dots(x, R, r, 8, '#3b332c', .5, .8, .12, .3);
+    dots(x, R, r, 110, '#ddd5c6', .35, .95, .01, .045);
+  }),
+  mercury: sprite(32, 61, function(x, R, r){ x.fillStyle = '#9c968f'; x.fillRect(0, 0, R*2, R*2); dots(x, R, r, 30, '#6f6a64', .4, .8, .03, .12); }),
+  venus: sprite(32, 71, function(x, R, r){ x.fillStyle = '#e6cf98'; x.fillRect(0, 0, R*2, R*2); dots(x, R, r, 10, '#f3e4bd', .3, .6, .2, .5); }),
+  mars: sprite(32, 81, function(x, R, r){ x.fillStyle = '#c45a30'; x.fillRect(0, 0, R*2, R*2); dots(x, R, r, 12, '#7e3a22', .4, .8, .08, .25); x.fillStyle = '#f2ece4'; x.fillRect(0, 0, R*2, R*.14); }),
+  saturn: sprite(64, 91, function(x, R){
+    var g = x.createLinearGradient(0, 0, 0, R*2);
+    [[0,'#b9a57e'],[.3,'#e6d3a3'],[.42,'#cdb27d'],[.5,'#efe0b6'],[.62,'#d4ba86'],[.8,'#e2cf9f'],[1,'#a8946f']].forEach(function(s){ g.addColorStop(s[0], s[1]); });
+    x.fillStyle = g; x.fillRect(0, 0, R*2, R*2);
+  })
+};
+function drawSaturn(x, cx, cy, R, al, tilt){
+  tilt = tilt == null ? -.32 : tilt;
+  function ring(a0, a1){
+    for (var k = 1.25; k <= 2.25; k += .05){
+      if (k > 1.93 && k < 2.0) continue;
+      x.globalAlpha = al * (k < 1.5 ? .35 : .8);
+      x.strokeStyle = k < 1.5 ? '#9c8b6c' : '#e2d0a4';
+      x.lineWidth = R*.055;
+      x.beginPath(); x.ellipse(cx, cy, R*k, R*k*.24, tilt, a0, a1); x.stroke();
+    }
+    x.globalAlpha = 1;
+  }
+  ring(Math.PI, TAU);
+  x.globalAlpha = al; x.drawImage(SPR.saturn, cx - R, cy - R, R*2, R*2); x.globalAlpha = 1;
+  ring(0, Math.PI);
+}
+var GAL = [
+  { name: 'Io', per: 1.769, spr: SPR.io, ph: .3 },
+  { name: 'Europa', per: 3.551, spr: SPR.europa, ph: 2.1 },
+  { name: 'Ganimede', per: 7.155, spr: SPR.ganimede, ph: 4.0 },
+  { name: 'Callisto', per: 16.689, spr: SPR.callisto, ph: 5.2 }
+];
+function drawSystem(b, f, o){
+  var ct = Math.cos(o.tilt), st = Math.sin(o.tilt);
+  for (var i = 0; i < GAL.length; i++){
+    var m = GAL[i], a = o.a[i], rr = o.r[i];
+    b.strokeStyle = f.strokeStyle = 'rgba(244,232,208,' + (o.orbit || .16) + ')';
+    b.lineWidth = f.lineWidth = 1.5;
+    b.beginPath(); b.ellipse(o.cx, o.cy, a, a*o.flat, o.tilt, Math.PI, TAU); b.stroke();
+    f.beginPath(); f.ellipse(o.cx, o.cy, a, a*o.flat, o.tilt, 0, Math.PI); f.stroke();
+    var ang = o.T * TAU / (m.per * o.day) + m.ph;
+    var ex = Math.cos(ang)*a, ey = Math.sin(ang)*a*o.flat;
+    var x = o.cx + ex*ct - ey*st, y = o.cy + ex*st + ey*ct;
+    var c = Math.sin(ang) > 0 ? f : b;
+    c.drawImage(m.spr, x - rr, y - rr, rr*2, rr*2);
+    if (o.labels){ c.font = '700 26px ' + BODY_FONT; c.textAlign = 'center'; c.fillStyle = 'rgba(244,232,208,.95)'; c.fillText(m.name, x, y - rr - 12); }
+  }
+}
+
+/* ---------- stelle di sfondo ---------- */
+var STARS = (function(){ var r = rng(7), a = []; for (var i = 0; i < 420; i++) a.push({ x: r()*1920, y: r()*1080, s: r() < .07 ? 2.4 : .6 + r()*1.3, a: .25 + r()*.6, tw: r()*TAU, sp: .2 + r()*.6, c: r() < .15 ? '#ffd9a8' : r() < .3 ? '#bcd6ff' : '#ffffff' }); return a; })();
+var starCanvas = $('#stars');
+function drawStars(T){
+  var x = clear(starCanvas);
+  for (var i = 0; i < STARS.length; i++){
+    var s = STARS[i], px = (s.x - T*s.sp*3) % 1920; if (px < 0) px += 1920;
+    x.globalAlpha = s.a * (.65 + .35*Math.sin(T*s.sp*2.2 + s.tw));
+    x.fillStyle = s.c; x.fillRect(px, s.y, s.s, s.s);
+  }
+  x.globalAlpha = 1;
+}
+
+/* ---------- contatori numerici ---------- */
+var counters = [];
+function fmtInt(n){ return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, '.'); }
+function fmtNum(v, el){
+  var d = +(el.getAttribute('data-dec') || 0);
+  v = v || 0;
+  if (!d) return (v < 0 ? '−' : '') + fmtInt(Math.abs(v));
+  return v.toLocaleString('it-IT', { minimumFractionDigits: d, maximumFractionDigits: d }).replace('-', '−');
+}
+function startCounters(el){
+  if (reduce) return;
+  $$('[data-to]', el).forEach(function(n){ n._start = performance.now() + 450; n.textContent = fmtNum(0, n); counters.push(n); });
+}
+function tickCounters(now){
+  for (var i = counters.length - 1; i >= 0; i--){
+    var n = counters[i], k = clamp((now - n._start) / 1700, 0, 1);
+    n.textContent = fmtNum(+n.getAttribute('data-to') * easeOut(k), n);
+    if (k >= 1) counters.splice(i, 1);
+  }
+}
+
+/* ---------- scene ---------- */
+var scenes = {};
+function k(el, name){ return $('[data-k="' + name + '"]', el); }
+
+scenes.cover = {
+  init: function(el){ this.back = k(el, 'back'); this.jup = k(el, 'jup'); this.front = k(el, 'front'); },
+  draw: function(t, T){
+    jupiter(this.jup, { cx: 550, cy: 550, r: 500, t: t, rot: T*7.2, lx: -.62, ly: .28 });
+    drawSystem(clear(this.back), clear(this.front), { cx: 1440, cy: 560, T: T, tilt: -.14, flat: .14, day: 1.6, a: [640, 770, 930, 1130], r: [15, 13, 22, 20], orbit: .14 });
+  }
+};
+
+scenes.carta = {
+  init: function(el){ this.el = el; this.jup = k(el, 'jup'); },
+  enter: function(){ startCounters(this.el); },
+  draw: function(t, T){ jupiter(this.jup, { cx: 150, cy: 150, r: 128, t: t, rot: T*7.2, lx: -.5, ly: .3 }); }
+};
+
+scenes.system = {
+  init: function(el){
+    this.row = k(el, 'row'); this.jup = k(el, 'jup'); this.ph = []; this.acc = 0;
+    var r = rng(5); this.belt = [];
+    for (var i = 0; i < 160; i++) this.belt.push({ x: 790 + r()*140, y: 430 + (r() - .5)*380, s: .8 + r()*2, a: .25 + r()*.5 });
+  },
+  enter: function(){ this.ph = []; for (var i = 0; i < 70; i++) this.ph.push({ x: 150 + Math.random()*1800, y: 430 + (Math.random() - .5)*400 }); },
+  draw: function(t, T, dt){
+    var x = clear(this.row), cy = 430, g, i;
+    g = x.createRadialGradient(-380, cy, 300, -380, cy, 1000);
+    g.addColorStop(0, 'rgba(255,190,90,.38)'); g.addColorStop(1, 'rgba(255,190,90,0)');
+    x.fillStyle = g; x.fillRect(0, 0, 1920, 1080);
+    this.acc += dt * 42;
+    while (this.acc > 1){ this.acc--; this.ph.push({ x: 140, y: cy + (Math.random() - .5)*400 }); }
+    x.lineCap = 'round'; x.lineWidth = 2;
+    for (i = this.ph.length - 1; i >= 0; i--){
+      var p = this.ph[i]; p.x += 330*dt;
+      if (p.x > 1940){ this.ph.splice(i, 1); continue; }
+      var d = p.x + 380, a = Math.min(1, (560/d)*(560/d)) * .95;
+      x.strokeStyle = 'rgba(255,228,170,' + a.toFixed(3) + ')';
+      x.beginPath(); x.moveTo(p.x - 34, p.y); x.lineTo(p.x, p.y); x.stroke();
+    }
+    g = x.createRadialGradient(-380, cy, 0, -380, cy, 520);
+    g.addColorStop(0, '#fff8e6'); g.addColorStop(.72, '#ffd27a'); g.addColorStop(1, '#f39a3c');
+    x.fillStyle = g; x.beginPath(); x.arc(-380, cy, 520, 0, TAU); x.fill();
+    x.fillStyle = '#c9b9a0';
+    for (i = 0; i < this.belt.length; i++){ var b = this.belt[i]; x.globalAlpha = b.a; x.fillRect(b.x, b.y, b.s, b.s); }
+    x.globalAlpha = 1;
+    [[300, 4.6, SPR.mercury], [440, 11.4, SPR.venus], [580, 12, SPR.earth], [720, 6.4, SPR.mars]].forEach(function(pl){ x.drawImage(pl[2], pl[0] - pl[1], cy - pl[1], pl[1]*2, pl[1]*2); });
+    drawSaturn(x, 1700, cy, 113, .62);
+    jupiter(this.jup, { cx: 160, cy: 160, r: 134, t: t, rot: T*7.2, lx: -.85, ly: .08 });
+  }
+};
+
+scenes.stella = {
+  init: function(el){
+    var self = this;
+    this.jup = k(el, 'jup'); this.mult = k(el, 'mult'); this.name = k(el, 'stateName');
+    var cells = k(el, 'cells');
+    for (var i = 0; i < 75; i++){ var d = document.createElement('i'); if (i === 12) d.className = 'm13'; if (i === 74) d.className = 'm75'; cells.appendChild(d); }
+    this.cells = $$('i', cells);
+    this.steps = $$('.step', el);
+    var targets = [{ c: 1, s: 0 }, { c: 13, s: 1 }, { c: 75, s: 2 }];
+    this.steps.forEach(function(b){ b.addEventListener('click', function(){ self.manual = true; self.target = targets[+b.getAttribute('data-step')]; }); });
+  },
+  enter: function(){ this.manual = false; this.c = 1; this.s = 0; this.lastN = -1; this.lastP = -1; },
+  draw: function(t, T){
+    var c, s;
+    if (this.manual){
+      this.c += (this.target.c - this.c) * .07; this.s += (this.target.s - this.s) * .06;
+      if (Math.abs(this.target.c - this.c) < .3) this.c = this.target.c;
+      c = this.c; s = this.s;
+    } else {
+      var u = reduce ? 0 : t % 16;
+      if (u < 2.5){ c = 1; s = 0; }
+      else if (u < 5.5){ c = 1 + 12*easeInOut((u - 2.5) / 2.6); s = smooth((u - 4.3) / 1.2); }
+      else if (u < 8){ c = 13; s = 1; }
+      else if (u < 12){ c = 13 + 62*easeInOut((u - 8) / 3.6); s = 1 + smooth((u - 10.6) / 1.4); }
+      else { c = 75; s = 2; }
+    }
+    jupiter(this.jup, { cx: 420, cy: 420, r: 230, t: t, rot: T*7.2, star: s, lx: -.55, ly: .3 });
+    var n = Math.round(c);
+    if (n !== this.lastN){ this.cells.forEach(function(d, i){ d.classList.toggle('on', i < n); }); this.mult.textContent = '× ' + n; this.lastN = n; }
+    var p = s < .5 ? 0 : s < 1.5 ? 1 : 2;
+    if (p !== this.lastP){
+      this.lastP = p; this.name.textContent = ['Giove', 'Nana bruna', 'Stella'][p];
+      this.steps.forEach(function(b, i){ b.classList.toggle('on', i === p); b.setAttribute('aria-pressed', i === p ? 'true' : 'false'); });
+    }
+  }
+};
+
+scenes.dim = {
+  init: function(el){
+    this.jup = k(el, 'jup'); this.over = k(el, 'over'); this.n11 = k(el, 'n11'); this.n13 = k(el, 'n1300');
+    k(el, 'replay').addEventListener('click', function(){ t0 = performance.now(); });
+    var R = 400, re = R / 11.2, r = rng(1321), pts = [];
+    while (pts.length < 1321){
+      var x = r()*2 - 1, y = r()*2 - 1, z = r()*2 - 1;
+      if (x*x + y*y + z*z <= 1){ var s = R - re*.85; pts.push({ x: x*s, y: y*s, z: z*s }); }
+    }
+    pts.sort(function(a, b){ return b.y - a.y; });
+    pts.forEach(function(p, i){ p.s = 6 + i / 1321 * 7; });
+    this.pts = pts; this.R = R; this.re = re; this.vis = [];
+  },
+  draw: function(t, T){
+    var R = this.R, re = this.re, cx = 450, cy = 450, i;
+    var glass = smooth((t - 5.2) / .9);
+    this.jup.style.opacity = (1 - glass*.8).toFixed(3);
+    jupiter(this.jup, { cx: cx, cy: cy, r: R, t: t, rot: T*7.2 });
+    var x = clear(this.over);
+    var rowA = 1 - smooth((t - 5) / .6), shown = 0;
+    if (rowA > 0){
+      x.globalAlpha = rowA;
+      for (i = 0; i < 11; i++){
+        var ti = .6 + i*.32; if (t < ti) break; shown++;
+        var kk = backOut((t - ti) / .45), px = cx - 11*re + re + i*2*re, s = re*kk;
+        x.drawImage(SPR.earth, px - s, cy - s, s*2, s*2);
+      }
+      if (shown === 11){
+        var la = smooth((t - 4.3) / .4) * rowA;
+        x.globalAlpha = la; x.strokeStyle = '#f4e8d0'; x.lineWidth = 3;
+        x.beginPath(); x.moveTo(cx - R, cy + re + 26); x.lineTo(cx + R, cy + re + 26);
+        x.moveTo(cx - R, cy + re + 14); x.lineTo(cx - R, cy + re + 38); x.moveTo(cx + R, cy + re + 14); x.lineTo(cx + R, cy + re + 38); x.stroke();
+        x.font = '800 40px "Bricolage Grotesque", sans-serif'; x.textAlign = 'center'; x.fillStyle = '#f4e8d0';
+        x.fillText('11 Terre', cx, cy + re + 84);
+      }
+      x.globalAlpha = 1;
+    }
+    this.n11.textContent = t < 5 ? String(shown) : '11';
+    var count = 0;
+    if (t > 6){
+      var th = (t - 6) * .14, c = Math.cos(th), sn = Math.sin(th), vis = this.vis; vis.length = 0;
+      for (i = 0; i < this.pts.length; i++){
+        var p = this.pts[i]; if (t < p.s) break; count++;
+        var f = clamp((t - p.s) / .55, 0, 1);
+        vis.push({ X: p.x*c + p.z*sn, Y: p.y - (1 - easeOut(f))*380, Z: -p.x*sn + p.z*c, a: f });
+      }
+      vis.sort(function(a, b){ return a.Z - b.Z; });
+      x.fillStyle = '#0a0c17';
+      for (i = 0; i < vis.length; i++){
+        var v = vis[i], qx = cx + v.X, qy = cy + v.Y;
+        x.globalAlpha = Math.min(1, v.a*2.5);
+        x.drawImage(SPR.earth, qx - re, qy - re, re*2, re*2);
+        var dd = (v.Z + R) / (2*R);
+        if (dd < .7){ x.globalAlpha = (.7 - dd) * .8; x.beginPath(); x.arc(qx, qy, re, 0, TAU); x.fill(); }
+      }
+      x.globalAlpha = 1;
+    }
+    if (glass > 0){ x.strokeStyle = 'rgba(244,232,208,' + (.55*glass).toFixed(3) + ')'; x.lineWidth = 3; x.beginPath(); x.arc(cx, cy, R, 0, TAU); x.stroke(); }
+    this.n13.textContent = t > 6 ? fmtInt(count) : '?';
+  }
+};
+
+scenes.struttura = {
+  init: function(el){ this.el = el; this.jup = k(el, 'jup'); this.clip = k(el, 'clip'); this.edge = k(el, 'edge'); this.leads = k(el, 'leads'); this.rows = $$('.layer', el); },
+  enter: function(){
+    var pts = [[341, -48], [222, -40], [92, -52]], html = '', cx = 560, cy = 600;
+    this.rows.forEach(function(row, i){
+      var dot = $('.dot', row), x = 0, y = 0, n = dot;
+      while (n && n !== stage){ x += n.offsetLeft; y += n.offsetTop; n = n.offsetParent; }
+      var a = pts[i][1] * Math.PI / 180, px = cx + pts[i][0]*Math.cos(a), py = cy + pts[i][0]*Math.sin(a);
+      var ex = x - 12, ey = y + dot.offsetHeight / 2;
+      html += '<g class="fade" style="--d:' + (1.7 + i*.3) + 's"><line class="lead-line" x1="' + px.toFixed(1) + '" y1="' + py.toFixed(1) + '" x2="' + ex + '" y2="' + ey + '"/><circle class="lead-dot" cx="' + px.toFixed(1) + '" cy="' + py.toFixed(1) + '" r="7"/></g>';
+    });
+    this.leads.innerHTML = html;
+    this.lastSweep = -1;
+  },
+  draw: function(t, T){
+    jupiter(this.jup, { cx: 430, cy: 430, r: 380, t: t, rot: T*7.2 });
+    var sw = reduce ? 90 : 90 * easeOut((t - .5) / 1.4);
+    if (sw === this.lastSweep) return;
+    this.lastSweep = sw;
+    var cx = 560, cy = 600, R = 382, a0 = -Math.PI / 2, a1 = (-90 + sw) * Math.PI / 180;
+    var p0 = (cx + R*Math.cos(a0)).toFixed(1) + ' ' + (cy + R*Math.sin(a0)).toFixed(1), p1 = (cx + R*Math.cos(a1)).toFixed(1) + ' ' + (cy + R*Math.sin(a1)).toFixed(1);
+    if (sw < .05){ this.clip.setAttribute('d', 'M0 0'); this.edge.setAttribute('d', 'M0 0'); return; }
+    this.clip.setAttribute('d', 'M' + cx + ' ' + cy + ' L' + p0 + ' A' + R + ' ' + R + ' 0 0 1 ' + p1 + ' Z');
+    this.edge.setAttribute('d', 'M' + p0 + ' L' + cx + ' ' + cy + ' L' + p1);
+  }
+};
+
+scenes.magnete = {
+  init: function(el){
+    this.jup = k(el, 'jup');
+    var cx = 560, cy = 600, R = 170, html = '';
+    function line(L, sx, stretch){
+      var th0 = Math.asin(Math.sqrt(1 / L)), d = '';
+      for (var i = 0; i <= 64; i++){
+        var th = th0 + (Math.PI - 2*th0) * i / 64, r = L*R*Math.pow(Math.sin(th), 2);
+        d += (i ? 'L' : 'M') + (cx + sx*r*Math.sin(th)*(stretch || 1)).toFixed(1) + ' ' + (cy - r*Math.cos(th)).toFixed(1);
+      }
+      return d;
+    }
+    [1.45, 1.85, 2.35, 2.95].forEach(function(L, i){
+      [1, -1].forEach(function(sx){ var d = line(L, sx); html += '<path class="fl-base" d="' + d + '"/><path class="fl" style="--o:' + (.9 - i*.14).toFixed(2) + '" d="' + d + '"/>'; });
+    });
+    [3.8, 4.9].forEach(function(L, i){ var d = line(L, -1, 1.45); html += '<path class="fl-base" d="' + d + '"/><path class="fl" style="--o:' + (.42 - i*.1).toFixed(2) + '" d="' + d + '"/>'; });
+    k(el, 'lines').innerHTML = html;
+  },
+  draw: function(t, T){ jupiter(this.jup, { cx: 210, cy: 210, r: 170, t: t, rot: T*7.2 }); }
+};
+
+function jetJS(lat){ return .5*Math.sin(lat*.157) + .2*Math.sin(lat*.401); }
+scenes.atmo = {
+  init: function(el){ this.gl = k(el, 'gl'); this.over = k(el, 'over'); },
+  draw: function(t){
+    var KM = 145.7;
+    jupiter(this.gl, { flat: { lon: 10, lat: 0, kmpp: KM }, cx: 500, cy: 380, t: t*6 + 40, grs: 40 });
+    var x = clear(this.over);
+    x.strokeStyle = 'rgba(255,255,255,.8)'; x.lineWidth = 3.5; x.lineCap = 'round'; x.lineJoin = 'round';
+    [34, 27, 21, 14, 6, -4, -12, -19, -25, -31, -38].forEach(function(lat){
+      var v = -jetJS(lat) * 6 * 1247.7 / KM;
+      if (Math.abs(v) < 6) return;
+      var y = 380 - lat*1230/KM, dir = v > 0 ? 1 : -1;
+      for (var j = 0; j < 4; j++){
+        var px = ((j*265 + v*t) % 1060 + 1060) % 1060 - 30;
+        x.beginPath(); x.moveTo(px - 10*dir, y - 10); x.lineTo(px, y); x.lineTo(px - 10*dir, y + 10); x.stroke();
+      }
+    });
+  }
+};
+
+scenes.grs = {
+  init: function(el){ this.gl = k(el, 'gl'); this.over = k(el, 'over'); },
+  draw: function(t){
+    var KM = 36, gx = 400, gy = 380;
+    jupiter(this.gl, { flat: { lon: 40 + (540 - gx)*KM/(1247.7*Math.cos(22*Math.PI/180)), lat: -22, kmpp: KM }, cx: 540, cy: gy, t: t + 6, grs: 40 });
+    var x = clear(this.over), er = 12742 / KM / 2, gw = 13882 / KM / 2;
+    var ex = 815 + (1 - easeOut((t - 1.2) / 1.6)) * 400, ea = smooth((t - 1.2) / .8);
+    if (ea > 0){
+      x.globalAlpha = ea;
+      x.save(); x.shadowColor = 'rgba(147,211,242,.6)'; x.shadowBlur = 30; x.drawImage(SPR.earthBig, ex - er, gy - er, er*2, er*2); x.restore();
+      x.font = '700 30px ' + BODY_FONT; x.textAlign = 'center'; x.fillStyle = '#f4e8d0';
+      x.fillText('Terra', ex, gy - er - 22);
+      x.globalAlpha = 1;
+    }
+    var ma = smooth((t - 3) / .8);
+    if (ma > 0){
+      x.globalAlpha = ma; x.strokeStyle = '#f4e8d0'; x.fillStyle = '#f4e8d0'; x.lineWidth = 3;
+      var yy = gy + er + 40;
+      [[gx, gw, '≈ 14.000 km'], [815, er, '12.742 km']].forEach(function(m){
+        x.beginPath(); x.moveTo(m[0] - m[1], yy); x.lineTo(m[0] + m[1], yy);
+        x.moveTo(m[0] - m[1], yy - 12); x.lineTo(m[0] - m[1], yy + 12); x.moveTo(m[0] + m[1], yy - 12); x.lineTo(m[0] + m[1], yy + 12); x.stroke();
+        x.font = '700 30px ' + BODY_FONT; x.textAlign = 'center'; x.fillText(m[2], m[0], yy + 46);
+      });
+      x.globalAlpha = 1;
+    }
+  }
+};
+
+scenes.lune = {
+  init: function(el){ this.el = el; this.back = k(el, 'back'); this.jup = k(el, 'jup'); this.front = k(el, 'front'); },
+  enter: function(){
+    $$('canvas[data-moon]', this.el).forEach(function(c){ sizeCanvas(c); var x = clear(c); x.drawImage(SPR[c.getAttribute('data-moon')], 6, 6, 104, 104); });
+  },
+  draw: function(t, T){
+    jupiter(this.jup, { cx: 170, cy: 170, r: 140, t: t, rot: T*7.2, lx: -.6, ly: .25 });
+    drawSystem(clear(this.back), clear(this.front), { cx: 960, cy: 180, T: T, tilt: -.04, flat: .13, day: 1.4, a: [250, 360, 520, 760], r: [22, 19, 31, 28], labels: true, orbit: .2 });
+  }
+};
+
+scenes.anelli = {
+  init: function(el){
+    this.el = el; this.back = k(el, 'back'); this.jup = k(el, 'jup'); this.front = k(el, 'front');
+    var r = rng(79), p = [];
+    function add(n, r0, r1, al, s){ for (var i = 0; i < n; i++) p.push({ r: r0 + r()*(r1 - r0), a: r()*TAU, al: al*(.5 + r()*.8), s: s }); }
+    add(520, 1.72, 1.81, .38, 1.6); add(160, 1.40, 1.71, .14, 1.4); add(200, 1.81, 2.54, .1, 1.4); add(140, 2.54, 3.11, .08, 1.4);
+    this.p = p;
+    this.moonlets = [{ r: 1.79, a: 0, s: 5 }, { r: 1.806, a: 2.2, s: 4 }, { r: 2.54, a: 4.1, s: 8 }, { r: 3.11, a: 1.2, s: 6 }];
+    var pr = rng(3); this.puff = []; for (var i = 0; i < 40; i++) this.puff.push({ vx: (pr() - .5)*90, vy: (pr() - .5)*50 });
+  },
+  enter: function(){
+    var sm = k(this.el, 'satMini'), jm = k(this.el, 'jupMini');
+    sizeCanvas(sm); sizeCanvas(jm);
+    drawSaturn(clear(sm), 75, 55, 24, 1, -.18);
+    var jx = clear(jm);
+    jupiter(jm, { cx: 75, cy: 55, r: 26, t: 0, rot: 30 });
+    jx = ctx(jm); jx.strokeStyle = 'rgba(217,184,146,.55)'; jx.lineWidth = 1.5;
+    jx.beginPath(); jx.ellipse(75, 55, 47, 47*.24, -.18, 0, Math.PI); jx.stroke();
+  },
+  pos: function(rr, ang){ var R = 230, ct = Math.cos(-.1), st = Math.sin(-.1), ex = Math.cos(ang)*rr*R, ey = Math.sin(ang)*rr*R*.13; return [520 + ex*ct - ey*st, 610 + ex*st + ey*ct, Math.sin(ang) > 0]; },
+  draw: function(t, T){
+    jupiter(this.jup, { cx: 280, cy: 280, r: 230, t: t, rot: T*7.2 });
+    var b = clear(this.back), f = clear(this.front), i, q, P;
+    [[1.40, 1.71, .022], [1.72, 1.81, .11], [1.81, 2.54, .016], [2.54, 3.11, .011]].forEach(function(z){
+      for (var rr = z[0]; rr <= z[1]; rr += .011){
+        [b, f].forEach(function(c, h){ c.globalAlpha = z[2]; c.strokeStyle = '#d9b892'; c.lineWidth = 2.6; c.beginPath(); c.ellipse(520, 610, rr*230, rr*230*.13, -.1, h ? 0 : Math.PI, h ? Math.PI : TAU); c.stroke(); });
+      }
+    });
+    b.fillStyle = f.fillStyle = '#e8cfae';
+    for (i = 0; i < this.p.length; i++){
+      q = this.p[i]; P = this.pos(q.r, q.a - T*.5*Math.pow(1.8 / q.r, 1.5));
+      var c = P[2] ? f : b; c.globalAlpha = q.al; c.fillRect(P[0], P[1], q.s, q.s);
+    }
+    b.globalAlpha = f.globalAlpha = 1;
+    var self = this, mp = this.moonlets.map(function(m){ return self.pos(m.r, m.a - T*.5*Math.pow(1.8 / m.r, 1.5)); });
+    this.moonlets.forEach(function(m, j){ var c = mp[j][2] ? f : b; c.fillStyle = j === 2 ? '#c27a55' : '#bfae98'; c.beginPath(); c.arc(mp[j][0], mp[j][1], m.s, 0, TAU); c.fill(); });
+    if (reduce) return;
+    var n = Math.floor(t / 3.2), ph = t - n*3.2, j = n % 3, m = this.moonlets[j];
+    var hitT = T - ph + .5, H = this.pos(m.r, m.a - hitT*.5*Math.pow(1.8 / m.r, 1.5));
+    if (ph < .5){
+      var k2 = ph / .5, sx = H[0] + 520, sy = H[1] - 620;
+      var hx = sx + (H[0] - sx)*k2, hy = sy + (H[1] - sy)*k2;
+      var g = f.createLinearGradient(hx - (H[0] - sx)*.25, hy - (H[1] - sy)*.25, hx, hy);
+      g.addColorStop(0, 'rgba(255,220,160,0)'); g.addColorStop(1, 'rgba(255,240,210,1)');
+      f.strokeStyle = g; f.lineWidth = 3; f.beginPath(); f.moveTo(hx - (H[0] - sx)*.25, hy - (H[1] - sy)*.25); f.lineTo(hx, hy); f.stroke();
+    } else if (ph < 2.7){
+      var u = ph - .5, al = 1 - u / 2.2;
+      if (u < .35){ f.globalAlpha = 1 - u / .35; f.fillStyle = '#fff3d6'; f.beginPath(); f.arc(H[0], H[1], 8 + u*60, 0, TAU); f.fill(); }
+      f.fillStyle = '#f3d9b0';
+      for (i = 0; i < this.puff.length; i++){ var pf = this.puff[i]; f.globalAlpha = al * .9; f.fillRect(H[0] + pf.vx*u, H[1] + pf.vy*u, 2.5, 2.5); }
+      f.globalAlpha = 1;
+    }
+  }
+};
+
+scenes.juno = {
+  init: function(el){ this.jup = k(el, 'jup'); this.over = k(el, 'over'); this.trail = []; },
+  enter: function(){ this.trail = []; },
+  draw: function(t, T){
+    jupiter(this.jup, { cx: 260, cy: 260, r: 210, t: t, rot: T*7.2, lx: -.45, ly: .35 });
+    var x = clear(this.over), Fx = 620, Fy = 620, a = 427, e = .45, bb = a*Math.sqrt(1 - e*e);
+    x.setLineDash([10, 12]); x.strokeStyle = 'rgba(147,211,242,.75)'; x.lineWidth = 3;
+    x.beginPath(); x.ellipse(Fx - a*e, Fy, a, bb, 0, 0, TAU); x.stroke(); x.setLineDash([]);
+    var M = TAU * ((t / 10) % 1), E = M;
+    for (var i = 0; i < 8; i++) E = E - (E - e*Math.sin(E) - M) / (1 - e*Math.cos(E));
+    var px = Fx + a*(Math.cos(E) - e), py = Fy + bb*Math.sin(E);
+    this.trail.push([px, py]); if (this.trail.length > 46) this.trail.shift();
+    for (i = 1; i < this.trail.length; i++){
+      x.strokeStyle = 'rgba(236,169,92,' + (i / this.trail.length * .9).toFixed(3) + ')'; x.lineWidth = 4;
+      x.beginPath(); x.moveTo(this.trail[i - 1][0], this.trail[i - 1][1]); x.lineTo(this.trail[i][0], this.trail[i][1]); x.stroke();
+    }
+    x.save(); x.translate(px, py); x.rotate(T*TAU / 30 * 6);
+    x.shadowColor = 'rgba(236,169,92,.9)'; x.shadowBlur = 18;
+    x.strokeStyle = '#9fb3d1'; x.lineWidth = 8; x.lineCap = 'round';
+    for (i = 0; i < 3; i++){ var an = i*TAU / 3; x.beginPath(); x.moveTo(Math.cos(an)*8, Math.sin(an)*8); x.lineTo(Math.cos(an)*32, Math.sin(an)*32); x.stroke(); }
+    x.fillStyle = '#f4e8d0'; x.beginPath(); x.arc(0, 0, 9, 0, TAU); x.fill();
+    x.restore();
+    x.font = '700 28px ' + BODY_FONT; x.fillStyle = '#ffd7a3'; x.textAlign = 'left';
+    x.fillText('Juno', px + 38, py - 22);
+  }
+};
+
+scenes.fine = {
+  init: function(el){ this.back = k(el, 'back'); this.jup = k(el, 'jup'); this.front = k(el, 'front'); },
+  draw: function(t, T){
+    jupiter(this.jup, { cx: 500, cy: 500, r: 400, t: t, rot: T*7.2, lx: -.6, ly: .3 });
+    drawSystem(clear(this.back), clear(this.front), { cx: 1380, cy: 590, T: T, tilt: -.16, flat: .13, day: 2.2, a: [470, 540, 620, 720], r: [12, 11, 18, 16], orbit: .12 });
+  }
+};
+
+scenes.quiz = {
+  init: function(el){
+    $$('.qcard', el).forEach(function(b){ b.addEventListener('click', function(){ var on = b.classList.toggle('flip'); b.setAttribute('aria-pressed', on ? 'true' : 'false'); }); });
+    this.el = el;
+  },
+  enter: function(){ $$('.qcard', this.el).forEach(function(b){ b.classList.remove('flip'); b.setAttribute('aria-pressed', 'false'); }); }
+};
+
+scenes.grazie = {
+  init: function(el){ this.jup = k(el, 'jup'); },
+  draw: function(t, T){ jupiter(this.jup, { cx: 960, cy: 1660 - 60*easeOut(t / 2.5), r: 1000, t: t, rot: T*4, lx: -.2, ly: .9, tilt: 1.1 }); }
+};
+
+slides.forEach(function(s){ var sc = scenes[s.getAttribute('data-scene')]; if (sc && sc.init) sc.init(s); });
+
+/* ---------- impaginazione ---------- */
+function fit(){
+  var w = deck.clientWidth, h = deck.clientHeight;
+  scale = Math.max(.05, Math.min(w / 1920, h / 1080));
+  stage.style.transform = 'translate(' + (-960*scale) + 'px,' + (-540*scale) + 'px) scale(' + scale + ')';
+  sizeCanvas(starCanvas);
+  if (cur >= 0) $$('canvas', slides[cur]).forEach(sizeCanvas);
+  var sc = cur >= 0 && scenes[slides[cur].getAttribute('data-scene')];
+  if (sc && sc.enter && slides[cur].getAttribute('data-scene') === 'lune') sc.enter();
+  if (sc && slides[cur].getAttribute('data-scene') === 'anelli') sc.enter();
+  if (reduce) renderOnce();
+}
+
+var notesPanel = $('#notesPanel'), notesText = $('[data-k="notesText"]', notesPanel), notesBtn = $('#notesBtn');
+var countEl = $('#count'), bar = $('#progress i');
+var freeTimers = [];
+
+function go(i){
+  i = clamp(i, 0, N - 1);
+  if (i === cur) return;
+  var prev = cur;
+  if (prev >= 0){
+    var ps = slides[prev]; ps.classList.remove('active');
+    freeTimers.push(setTimeout(function(){ if (slides.indexOf(ps) !== cur) $$('canvas', ps).forEach(freeCanvas); }, 800));
+  }
+  cur = i;
+  var s = slides[cur];
+  void s.offsetWidth;
+  s.classList.add('active');
+  $$('canvas', s).forEach(sizeCanvas);
+  t0 = performance.now();
+  var sc = scenes[s.getAttribute('data-scene')];
+  if (sc && sc.enter) sc.enter();
+  countEl.textContent = (cur + 1) + ' / ' + N;
+  bar.style.width = ((cur + 1) / N * 100) + '%';
+  var nt = $('.notes', s); notesText.textContent = nt ? nt.textContent : '';
+  var h = '#slide-' + (cur + 1);
+  if (location.hash !== h){ try { history.replaceState(null, '', h); } catch (e) {} }
+  lastFrame = performance.now();
+  if (reduce) renderOnce(); else drawScene(performance.now());
+}
+function drawScene(now){
+  var s = slides[cur], sc = s && scenes[s.getAttribute('data-scene')];
+  var t = (now - t0) / 1000, T = now / 1000, dt = Math.min(.05, (now - lastFrame) / 1000);
+  if (sc && sc.draw) sc.draw(t, T, dt);
+}
+function renderOnce(){
+  var now = performance.now();
+  drawStars(now / 1000);
+  var s = slides[cur], sc = s && scenes[s.getAttribute('data-scene')];
+  if (sc && sc.draw) sc.draw(20, now / 1000, 0);
+  counters.length = 0;
+}
+
+/* ---------- ciclo di animazione ---------- */
+var lastFrame = performance.now(), slow = 0;
+function frame(now){
+  var dt = now - lastFrame;
+  if (dt > 48) slow++; else slow = Math.max(0, slow - .5);
+  if (slow > 45 && quality > .5){ quality *= .8; slow = 0; fit(); }
+  drawStars(now / 1000);
+  drawScene(now);
+  tickCounters(now);
+  lastFrame = now;
+  requestAnimationFrame(frame);
+}
+
+/* ---------- comandi ---------- */
+function toggleNotes(){ var on = notesPanel.hidden; notesPanel.hidden = !on; notesBtn.setAttribute('aria-pressed', on ? 'true' : 'false'); }
+function toggleFs(){
+  try {
+    if (document.fullscreenElement) document.exitFullscreen();
+    else if (deck.requestFullscreen) { var p = deck.requestFullscreen(); if (p && p.catch) p.catch(function(){}); }
+  } catch (e) {}
+}
+$('#prevBtn').addEventListener('click', function(){ go(cur - 1); });
+$('#nextBtn').addEventListener('click', function(){ go(cur + 1); });
+notesBtn.addEventListener('click', toggleNotes);
+$('#fsBtn').addEventListener('click', toggleFs);
+document.addEventListener('keydown', function(e){
+  if (e.altKey || e.ctrlKey || e.metaKey) return;
+  var key = e.key, onButton = document.activeElement && document.activeElement.tagName === 'BUTTON';
+  if (key === 'ArrowRight' || key === 'PageDown' || key === 'ArrowDown'){ e.preventDefault(); go(cur + 1); }
+  else if ((key === ' ' || key === 'Enter') && !onButton){ e.preventDefault(); go(cur + 1); }
+  else if (key === 'ArrowLeft' || key === 'PageUp' || key === 'ArrowUp' || key === 'Backspace'){ e.preventDefault(); go(cur - 1); }
+  else if (key === 'Home'){ go(0); }
+  else if (key === 'End'){ go(N - 1); }
+  else if (key === 'n' || key === 'N'){ toggleNotes(); }
+  else if (key === 'f' || key === 'F'){ toggleFs(); }
+});
+var downX = null, swiped = false;
+stage.addEventListener('pointerdown', function(e){ downX = e.clientX; swiped = false; });
+stage.addEventListener('pointerup', function(e){
+  if (downX == null) return;
+  var dx = e.clientX - downX; downX = null;
+  if (Math.abs(dx) > 70){ swiped = true; go(cur + (dx < 0 ? 1 : -1)); }
+});
+stage.addEventListener('click', function(e){
+  if (swiped){ swiped = false; return; }
+  if (e.target.closest('button, a, #notesPanel')) return;
+  go(cur + 1);
+});
+var idleTimer = null;
+function wake(){ deck.classList.remove('idle'); clearTimeout(idleTimer); idleTimer = setTimeout(function(){ if (document.fullscreenElement) deck.classList.add('idle'); }, 2500); }
+document.addEventListener('mousemove', wake);
+document.addEventListener('fullscreenchange', function(){ wake(); setTimeout(fit, 60); });
+window.addEventListener('resize', fit);
+window.addEventListener('hashchange', function(){ var m = /slide-(\d+)/.exec(location.hash); if (m) go(+m[1] - 1); });
+
+/* ---------- avvio ---------- */
+fit();
+var start = /slide-(\d+)/.exec(location.hash);
+go(start ? +start[1] - 1 : 0);
+if (!reduce) requestAnimationFrame(frame);
+})();
+</script>
